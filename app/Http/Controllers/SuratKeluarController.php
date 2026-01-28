@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SuratKeluarController extends Controller
 {
@@ -56,14 +57,48 @@ class SuratKeluarController extends Controller
             'tanggal_surat' => 'required',
             'tujuan' => 'required',
             'perihal' => 'required',
+            'file_surat' => 'nullable|mimes:pdf|max:2048',
+            'status' => 'required',
         ]);
 
+        // upload file
         $file = null;
         if ($request->hasFile('file_surat')) {
             $file = $request->file('file_surat')->store('surat', 'public');
         }
 
+        // ===============================
+        // 🔢 GENERATE NOMOR AGENDA OTOMATIS
+        // ===============================
+        $tahun = Carbon::parse($request->tanggal_surat)->year;
+
+        $last = SuratKeluar::whereYear('tanggal_surat', $tahun)->orderBy('id', 'desc')->first();
+
+        $urutan = $last ? ((int) substr($last->nomor_agenda, 4, 4)) + 1 : 1;
+
+        $bulanRomawi = [
+            1 => 'I',
+            2 => 'II',
+            3 => 'III',
+            4 => 'IV',
+            5 => 'V',
+            6 => 'VI',
+            7 => 'VII',
+            8 => 'VIII',
+            9 => 'IX',
+            10 => 'X',
+            11 => 'XI',
+            12 => 'XII',
+        ];
+
+        $bulan = $bulanRomawi[Carbon::parse($request->tanggal_surat)->month];
+        $nomorAgenda = 'AGK-' . str_pad($urutan, 4, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
+
+        // ===============================
+        // 💾 SIMPAN DATA
+        // ===============================
         $surat = SuratKeluar::create([
+            'nomor_agenda' => $nomorAgenda,
             'nomor_surat' => $request->nomor_surat,
             'tanggal_surat' => $request->tanggal_surat,
             'tujuan' => $request->tujuan,
@@ -71,7 +106,11 @@ class SuratKeluarController extends Controller
             'file_surat' => $file,
             'status' => $request->status,
         ]);
-        logAktivitas('Tambah Surat Keluar', 'Surat Keluar', 'SuratKeluar', $surat->id, 'Menambahkan surat keluar nomor: ' . $surat->nomor_surat);
+
+        // ===============================
+        // 📝 LOG AKTIVITAS
+        // ===============================
+        logAktivitas('Tambah Surat Keluar', 'Surat Keluar', 'SuratKeluar', $surat->id, 'Menambahkan surat keluar | Agenda: ' . $nomorAgenda . ' | Nomor Surat: ' . $surat->nomor_surat);
 
         return redirect()->route('surat-keluar.index')->with('success', 'Data surat keluar berhasil disimpan');
     }
@@ -113,5 +152,14 @@ class SuratKeluarController extends Controller
         $data->delete();
 
         return redirect()->back()->with('success', 'Data berhasil dihapus');
+    }
+    public function show($id)
+    {
+        $data = SuratKeluar::findOrFail($id);
+
+        // Ambil timeline log aktivitas khusus surat keluar ini
+        $timeline = \App\Models\ActivityLog::where('target_type', 'SuratKeluar')->where('target_id', $data->id)->latest()->get();
+
+        return view('surat_keluar.show', compact('data', 'timeline'));
     }
 }

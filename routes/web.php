@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/surat-masuk/pdf', [LaporanController::class, 'suratMasukPdf'])->name('laporan.surat_masuk.pdf');
 
     Route::get('/laporan/surat-keluar', [LaporanController::class, 'suratKeluar'])->name('laporan.surat_keluar');
+    Route::get('/surat-masuk/{id}/detail', [\App\Http\Controllers\SuratMasukController::class, 'show'])->name('surat-masuk.show');
+    Route::resource('surat-keluar', SuratKeluarController::class);
 
     Route::get('/laporan/surat-keluar/pdf', [LaporanController::class, 'suratKeluarPdf'])->name('laporan.surat_keluar.pdf');
     Route::get('/activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('activity-logs.index');

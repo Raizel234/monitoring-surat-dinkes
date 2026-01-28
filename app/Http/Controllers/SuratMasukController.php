@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
 use App\Models\Disposisi;
+use Carbon\Carbon;
+use App\Models\ActivityLog;
 
 class SuratMasukController extends Controller
 {
@@ -50,34 +52,71 @@ class SuratMasukController extends Controller
         return view('surat_masuk.create');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nomor_surat' => 'required',
-            'tanggal_surat' => 'required',
-            'pengirim' => 'required',
-            'perihal' => 'required',
-            'file_surat' => 'nullable|mimes:pdf|max:2048',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'nomor_surat' => 'required',
+        'tanggal_surat' => 'required',
+        'pengirim' => 'required',
+        'perihal' => 'required',
+        'file_surat' => 'nullable|mimes:pdf|max:2048',
+    ]);
 
-        $file = null;
-        if ($request->hasFile('file_surat')) {
-            $file = $request->file('file_surat')->store('surat', 'public');
-        }
-
-        $surat = SuratMasuk::create([
-            'nomor_surat' => $request->nomor_surat,
-            'tanggal_surat' => $request->tanggal_surat,
-            'pengirim' => $request->pengirim,
-            'perihal' => $request->perihal,
-            'file_surat' => $file,
-            'status' => 'Diterima',
-        ]);
-
-        logAktivitas('Tambah Surat Masuk', 'Surat Masuk', 'SuratMasuk', $surat->id, 'Menambahkan surat masuk nomor: ' . $surat->nomor_surat);
-
-        return redirect()->route('surat-masuk.index')->with('success', 'Surat berhasil ditambahkan');
+    // upload file
+    $file = null;
+    if ($request->hasFile('file_surat')) {
+        $file = $request->file('file_surat')->store('surat', 'public');
     }
+
+    // ===============================
+    // 🔢 GENERATE NOMOR AGENDA OTOMATIS
+    // ===============================
+    $tahun = Carbon::parse($request->tanggal_surat)->year;
+
+    $last = SuratMasuk::whereYear('tanggal_surat', $tahun)
+        ->orderBy('id', 'desc')
+        ->first();
+
+    $urutan = $last
+        ? ((int) substr($last->nomor_agenda, 4, 4)) + 1
+        : 1;
+
+    $bulanRomawi = [
+        1=>'I',2=>'II',3=>'III',4=>'IV',5=>'V',6=>'VI',
+        7=>'VII',8=>'VIII',9=>'IX',10=>'X',11=>'XI',12=>'XII'
+    ];
+
+    $bulan = $bulanRomawi[Carbon::parse($request->tanggal_surat)->month];
+    $nomorAgenda = 'AGM-' . str_pad($urutan, 4, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
+
+    // ===============================
+    // 💾 SIMPAN DATA
+    // ===============================
+    $surat = SuratMasuk::create([
+        'nomor_agenda' => $nomorAgenda,
+        'nomor_surat' => $request->nomor_surat,
+        'tanggal_surat' => $request->tanggal_surat,
+        'pengirim' => $request->pengirim,
+        'perihal' => $request->perihal,
+        'file_surat' => $file,
+        'status' => 'Diterima',
+    ]);
+
+    // ===============================
+    // 📝 LOG AKTIVITAS
+    // ===============================
+    logAktivitas(
+        'Tambah Surat Masuk',
+        'Surat Masuk',
+        'SuratMasuk',
+        $surat->id,
+        'Menambahkan surat masuk | Agenda: '.$nomorAgenda.' | Nomor Surat: '.$surat->nomor_surat
+    );
+
+    return redirect()->route('surat-masuk.index')
+        ->with('success', 'Surat berhasil ditambahkan');
+}
+
 
     public function edit($id)
     {
@@ -158,4 +197,16 @@ class SuratMasukController extends Controller
 
         return redirect()->route('surat-masuk.index')->with('success', 'Disposisi berhasil dibuat');
     }
+    public function show($id)
+{
+    $data = SuratMasuk::with('disposisis')->findOrFail($id);
+
+    // ambil log khusus surat ini
+    $logs = ActivityLog::where('target_type', 'SuratMasuk')
+        ->where('target_id', $data->id)
+        ->orderBy('created_at')
+        ->get();
+
+    return view('surat_masuk.show', compact('data', 'logs'));
+}
 }

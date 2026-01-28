@@ -11,17 +11,10 @@ class SuratMasuk extends Model
 
     protected $table = 'surat_masuks';
 
-    protected $fillable = [
-        'nomor_surat',
-        'pengirim',
-        'tanggal_surat',
-        'perihal',
-        'file_surat',
-        'status'
-    ];
-    public function disposisis()
-{
-    return $this->hasMany(\App\Models\Disposisi::class);
-}
+    protected $fillable = ['nomor_agenda', 'nomor_surat', 'tanggal_surat', 'pengirim', 'perihal', 'file_surat', 'status'];
 
+    public function disposisis()
+    {
+        return $this->hasMany(\App\Models\Disposisi::class);
+    }
 }

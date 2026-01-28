@@ -2,14 +2,15 @@
     <style>
         .page-title {
             font-family: 'Playfair Display', serif;
-            color: #0f5132; /* Hijau lebih gelap untuk Surat Keluar */
+            color: #0f5132;
+            /* Hijau lebih gelap untuk Surat Keluar */
             font-weight: 700;
         }
 
         .table-card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             background: white;
         }
@@ -51,7 +52,7 @@
         .btn-add:hover {
             background-color: #0f5132;
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .badge-status {
@@ -77,7 +78,7 @@
         .filter-card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             background: #fff;
         }
     </style>
@@ -99,32 +100,33 @@
                 <div class="row g-2 align-items-end">
                     <div class="col-md-4">
                         <label class="form-label small text-muted mb-1">Cari (Nomor/Tujuan/Perihal)</label>
-                        <input type="text" name="q" value="{{ request('q') }}"
-                               class="form-control rounded-3"
-                               placeholder="Contoh: 100/.. / Puskesmas / Permohonan">
+                        <input type="text" name="q" value="{{ request('q') }}" class="form-control rounded-3"
+                            placeholder="Contoh: 100/.. / Puskesmas / Permohonan">
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Status</label>
                         <select name="status" class="form-select rounded-3">
                             <option value="">Semua</option>
-                            <option value="Draft" {{ request('status')=='Draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="Dikirim" {{ request('status')=='Dikirim' ? 'selected' : '' }}>Dikirim</option>
-                            <option value="Terkirim" {{ request('status')=='Terkirim' ? 'selected' : '' }}>Terkirim</option>
-                            <option value="Selesai" {{ request('status')=='Selesai' ? 'selected' : '' }}>Selesai</option>
+                            <option value="Draft" {{ request('status') == 'Draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="Dikirim" {{ request('status') == 'Dikirim' ? 'selected' : '' }}>Dikirim
+                            </option>
+                            <option value="Terkirim" {{ request('status') == 'Terkirim' ? 'selected' : '' }}>Terkirim
+                            </option>
+                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai
+                            </option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Dari Tanggal</label>
                         <input type="date" name="from" value="{{ request('from') }}"
-                               class="form-control rounded-3">
+                            class="form-control rounded-3">
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Sampai Tanggal</label>
-                        <input type="date" name="to" value="{{ request('to') }}"
-                               class="form-control rounded-3">
+                        <input type="date" name="to" value="{{ request('to') }}" class="form-control rounded-3">
                     </div>
 
                     <div class="col-md-2 d-flex gap-2">
@@ -168,6 +170,7 @@
                             <td class="text-center fw-bold text-muted">{{ $loop->iteration }}</td>
                             <td>
                                 <div class="fw-bold text-dark">{{ $d->nomor_surat }}</div>
+                                <div class="small text-muted">Agenda: {{ $d->nomor_agenda }}</div>
                                 <div class="small text-muted">
                                     <i class="bi bi-calendar3 me-1"></i>
                                     {{ \Carbon\Carbon::parse($d->tanggal_surat)->format('d/m/Y') }}
@@ -192,17 +195,22 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <span class="badge-status {{ $d->status == 'Terkirim' ? 'bg-success text-white' : 'bg-warning text-dark' }}">
+                                <span
+                                    class="badge-status {{ $d->status == 'Terkirim' ? 'bg-success text-white' : 'bg-warning text-dark' }}">
                                     {{ $d->status }}
                                 </span>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
                                     <a href="{{ route('surat-keluar.edit', $d->id) }}"
-                                       class="btn btn-warning action-btn text-white"
-                                       title="Edit Surat">
+                                        class="btn btn-warning action-btn text-white" title="Edit Surat">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
+                                    <a href="{{ route('surat-keluar.show', $d->id) }}"
+                                        class="btn btn-info action-btn text-white" title="Detail & Timeline">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
 
                                     <form action="{{ route('surat-keluar.destroy', $d->id) }}" method="POST"
                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus data surat ini?')">

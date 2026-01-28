@@ -9,7 +9,7 @@
         .table-card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
 
@@ -86,7 +86,7 @@
         .filter-card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             background: white;
         }
@@ -109,31 +109,32 @@
                 <div class="row g-2 align-items-end">
                     <div class="col-md-4">
                         <label class="form-label small text-muted mb-1">Cari (Nomor/Pengirim/Perihal)</label>
-                        <input type="text" name="q" value="{{ request('q') }}"
-                               class="form-control rounded-3"
-                               placeholder="Contoh: 440/.. / RSUD / Permohonan">
+                        <input type="text" name="q" value="{{ request('q') }}" class="form-control rounded-3"
+                            placeholder="Contoh: 440/.. / RSUD / Permohonan">
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Status</label>
                         <select name="status" class="form-select rounded-3">
                             <option value="">Semua</option>
-                            <option value="Diterima" {{ request('status')=='Diterima' ? 'selected' : '' }}>Diterima</option>
-                            <option value="Diproses" {{ request('status')=='Diproses' ? 'selected' : '' }}>Diproses</option>
-                            <option value="Selesai"  {{ request('status')=='Selesai' ? 'selected' : '' }}>Selesai</option>
+                            <option value="Diterima" {{ request('status') == 'Diterima' ? 'selected' : '' }}>Diterima
+                            </option>
+                            <option value="Diproses" {{ request('status') == 'Diproses' ? 'selected' : '' }}>Diproses
+                            </option>
+                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai
+                            </option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Dari Tanggal</label>
                         <input type="date" name="from" value="{{ request('from') }}"
-                               class="form-control rounded-3">
+                            class="form-control rounded-3">
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Sampai Tanggal</label>
-                        <input type="date" name="to" value="{{ request('to') }}"
-                               class="form-control rounded-3">
+                        <input type="date" name="to" value="{{ request('to') }}" class="form-control rounded-3">
                     </div>
 
                     <div class="col-md-2 d-flex gap-2">
@@ -179,11 +180,12 @@
 
                             <td>
                                 <div class="fw-bold text-dark">{{ $d->nomor_surat }}</div>
+                                <div class="small text-muted">Agenda: {{ $d->nomor_agenda }}</div>
                                 <div class="small text-muted">
                                     ID: #SRT-{{ str_pad($d->id, 4, '0', STR_PAD_LEFT) }}
                                 </div>
 
-                                {{-- ✅ Monitoring disposisi --}}
+                                {{-- Monitoring disposisi --}}
                                 <div class="mt-1">
                                     <span class="badge bg-light text-dark border">
                                         Disposisi: {{ $d->disposisis_count ?? 0 }}
@@ -219,8 +221,11 @@
                             <td class="text-center">
                                 @php
                                     $badgeClass = 'bg-success text-white';
-                                    if ($d->status === 'Diproses') $badgeClass = 'bg-warning text-dark';
-                                    elseif ($d->status === 'Selesai') $badgeClass = 'bg-secondary text-white';
+                                    if ($d->status === 'Diproses') {
+                                        $badgeClass = 'bg-warning text-dark';
+                                    } elseif ($d->status === 'Selesai') {
+                                        $badgeClass = 'bg-secondary text-white';
+                                    }
                                 @endphp
 
                                 <span class="badge-status {{ $badgeClass }}">
@@ -228,26 +233,33 @@
                                 </span>
                             </td>
 
+                            {{-- ===== KOLOM AKSI ===== --}}
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
 
-                                    {{-- ✅ Tombol Disposisi --}}
+                                    {{-- DETAIL + TIMELINE --}}
+                                    <a href="{{ route('surat-masuk.show', $d->id) }}"
+                                        class="btn btn-info action-btn text-white" title="Detail & Timeline">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    {{-- DISPOSISI --}}
                                     <a href="{{ route('surat-masuk.disposisi.form', $d->id) }}"
-                                       class="btn btn-disposisi action-btn"
-                                       title="Disposisi Surat">
-                                        @if(($d->disposisis_count ?? 0) > 0)
+                                        class="btn btn-disposisi action-btn" title="Disposisi Surat">
+                                        @if (($d->disposisis_count ?? 0) > 0)
                                             <i class="bi bi-check2-circle"></i>
                                         @else
                                             <i class="bi bi-send"></i>
                                         @endif
                                     </a>
 
+                                    {{-- EDIT --}}
                                     <a href="{{ route('surat-masuk.edit', $d->id) }}"
-                                       class="btn btn-warning action-btn text-white"
-                                       title="Edit Data">
+                                        class="btn btn-warning action-btn text-white" title="Edit Data">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
 
+                                    {{-- HAPUS --}}
                                     <form action="{{ route('surat-masuk.destroy', $d->id) }}" method="POST"
                                         onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                         @csrf
@@ -256,6 +268,7 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+
                                 </div>
                             </td>
                         </tr>
@@ -268,6 +281,7 @@
                         </tr>
                     @endforelse
                 </tbody>
+
             </table>
         </div>
     </div>
