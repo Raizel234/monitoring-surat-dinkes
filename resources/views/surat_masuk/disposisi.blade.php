@@ -9,7 +9,7 @@
         .card-soft {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
 
@@ -19,7 +19,8 @@
             margin-bottom: 12px;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 10px;
             padding: 10px 12px;
         }
@@ -156,28 +157,31 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Tujuan Disposisi</label>
-                            <input type="text" name="tujuan" value="{{ old('tujuan') }}" class="form-control" required
-                                   placeholder="Contoh: Kepala Bidang P2P / Sekretariat / Keuangan">
+                            <input type="text" name="tujuan" value="{{ old('tujuan') }}" class="form-control"
+                                required placeholder="Contoh: Kepala Bidang P2P / Sekretariat / Keuangan">
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Prioritas</label>
                             <select name="prioritas" class="form-select" required>
-                                <option value="Rendah"  {{ old('prioritas')=='Rendah' ? 'selected' : '' }}>Rendah</option>
-                                <option value="Sedang"  {{ old('prioritas','Sedang')=='Sedang' ? 'selected' : '' }}>Sedang</option>
-                                <option value="Tinggi"  {{ old('prioritas')=='Tinggi' ? 'selected' : '' }}>Tinggi</option>
+                                <option value="Rendah" {{ old('prioritas') == 'Rendah' ? 'selected' : '' }}>Rendah
+                                </option>
+                                <option value="Sedang" {{ old('prioritas', 'Sedang') == 'Sedang' ? 'selected' : '' }}>
+                                    Sedang</option>
+                                <option value="Tinggi" {{ old('prioritas') == 'Tinggi' ? 'selected' : '' }}>Tinggi
+                                </option>
                             </select>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Batas Waktu (Opsional)</label>
-                            <input type="date" name="batas_waktu" value="{{ old('batas_waktu') }}" class="form-control">
+                            <input type="date" name="batas_waktu" value="{{ old('batas_waktu') }}"
+                                class="form-control">
                         </div>
 
                         <div class="col-12">
                             <label class="form-label fw-semibold">Instruksi</label>
-                            <textarea name="instruksi" rows="4" class="form-control"
-                                      placeholder="Tuliskan instruksi disposisi (opsional)">{{ old('instruksi') }}</textarea>
+                            <textarea name="instruksi" rows="4" class="form-control" placeholder="Tuliskan instruksi disposisi (opsional)">{{ old('instruksi') }}</textarea>
                         </div>
                     </div>
 
@@ -185,9 +189,14 @@
                         <button type="submit" class="btn btn-green">
                             <i class="bi bi-send me-2"></i> Simpan Disposisi
                         </button>
+                        <a href="{{ route('surat-masuk.disposisi.pdf', $data->id) }}"
+                            class="btn btn-gray" target="_blank">
+                            Cetak Lembar Disposisi (PDF)
+                        </a>
                         <a href="{{ route('surat-masuk.index') }}" class="btn btn-gray">
                             Batal
                         </a>
+
                     </div>
                 </form>
             </div>
@@ -203,7 +212,7 @@
                     </span>
                 </div>
 
-                @if($data->disposisis->count() == 0)
+                @if ($data->disposisis->count() == 0)
                     <div class="text-center py-4 text-muted">
                         <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                         Belum ada disposisi untuk surat ini.
@@ -222,31 +231,41 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($data->disposisis as $disp)
+                                @foreach ($data->disposisis as $disp)
                                     @php
                                         $badge = 'bg-warning text-dark';
-                                        if($disp->status == 'Menunggu') $badge = 'bg-secondary text-white';
-                                        if($disp->status == 'Diproses') $badge = 'bg-warning text-dark';
-                                        if($disp->status == 'Selesai')  $badge = 'bg-success text-white';
+                                        if ($disp->status == 'Menunggu') {
+                                            $badge = 'bg-secondary text-white';
+                                        }
+                                        if ($disp->status == 'Diproses') {
+                                            $badge = 'bg-warning text-dark';
+                                        }
+                                        if ($disp->status == 'Selesai') {
+                                            $badge = 'bg-success text-white';
+                                        }
                                     @endphp
                                     <tr>
                                         <td class="fw-semibold">{{ $disp->tujuan }}</td>
                                         <td>{{ $disp->instruksi ?? '-' }}</td>
                                         <td>{{ $disp->prioritas }}</td>
-                                        <td>{{ $disp->batas_waktu ? \Carbon\Carbon::parse($disp->batas_waktu)->format('d M Y') : '-' }}</td>
+                                        <td>{{ $disp->batas_waktu ? \Carbon\Carbon::parse($disp->batas_waktu)->format('d M Y') : '-' }}
+                                        </td>
                                         <td class="text-center">
                                             <span class="badge-status {{ $badge }}">{{ $disp->status }}</span>
                                         </td>
                                         <td class="text-center">
-                                            <form method="POST" action="{{ route('disposisi.updateStatus', $disp->id) }}">
+                                            <form method="POST"
+                                                action="{{ route('disposisi.updateStatus', $disp->id) }}">
                                                 @csrf
                                                 @method('PATCH')
-                                                <select name="status"
-                                                    class="form-select form-select-sm"
+                                                <select name="status" class="form-select form-select-sm"
                                                     onchange="this.form.submit()">
-                                                    <option value="Menunggu" {{ $disp->status=='Menunggu'?'selected':'' }}>Menunggu</option>
-                                                    <option value="Diproses" {{ $disp->status=='Diproses'?'selected':'' }}>Diproses</option>
-                                                    <option value="Selesai" {{ $disp->status=='Selesai'?'selected':'' }}>Selesai</option>
+                                                    <option value="Menunggu"
+                                                        {{ $disp->status == 'Menunggu' ? 'selected' : '' }}>Menunggu</option>
+                                                    <option value="Diproses"
+                                                        {{ $disp->status == 'Diproses' ? 'selected' : '' }}>Diproses</option>
+                                                    <option value="Selesai"
+                                                        {{ $disp->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
                                                 </select>
                                             </form>
                                         </td>

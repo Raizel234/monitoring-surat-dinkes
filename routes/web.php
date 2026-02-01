@@ -8,6 +8,7 @@ use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\VerifikasiController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -29,7 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/surat-masuk/pdf', [LaporanController::class, 'suratMasukPdf'])->name('laporan.surat_masuk.pdf');
 
     Route::get('/laporan/surat-keluar', [LaporanController::class, 'suratKeluar'])->name('laporan.surat_keluar');
-    Route::get('/surat-masuk/{id}/detail', [\App\Http\Controllers\SuratMasukController::class, 'show'])->name('surat-masuk.show');
+    Route::get('/surat-masuk/{id}', [SuratMasukController::class, 'show'])->name('surat-masuk.show');
+    Route::get('/surat-keluar/{id}', [SuratKeluarController::class, 'show'])->name('surat-keluar.show');
+
     Route::resource('surat-keluar', SuratKeluarController::class);
 
     Route::get('/laporan/surat-keluar/pdf', [LaporanController::class, 'suratKeluarPdf'])->name('laporan.surat_keluar.pdf');
@@ -43,7 +46,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/surat-masuk/{id}/disposisi', [SuratMasukController::class, 'disposisiForm'])->name('surat-masuk.disposisi.form');
 
     Route::post('/surat-masuk/{id}/disposisi', [SuratMasukController::class, 'disposisiStore'])->name('surat-masuk.disposisi.store');
+    Route::get('/surat-masuk/{id}/disposisi/pdf', [SuratMasukController::class, 'disposisiPdf'])->name('surat-masuk.disposisi.pdf');
+    Route::get('/surat-keluar/{id}/kendali/pdf', [SuratKeluarController::class, 'lembarKendaliPdf'])->name('surat-keluar.kendali.pdf');
+    Route::get('/surat-masuk/{id}/kendali/pdf', [SuratMasukController::class, 'lembarKendaliPdf'])->name('surat-masuk.kendali.pdf');
 
+    Route::get('/verifikasi/surat-masuk/{id}', [VerifikasiController::class, 'suratMasuk'])->name('verifikasi.surat_masuk');
+
+    Route::get('/verifikasi/surat-keluar/{id}', [VerifikasiController::class, 'suratKeluar'])->name('verifikasi.surat_keluar');
     // ✅ Update status disposisi
     Route::patch('/disposisi/{id}/status', [DisposisiController::class, 'updateStatus'])->name('disposisi.updateStatus');
 });

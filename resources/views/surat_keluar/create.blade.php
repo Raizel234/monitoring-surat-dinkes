@@ -169,6 +169,8 @@
                                 <i class="bi bi-check-circle-fill me-2"></i> Simpan Surat Keluar
                             </button>
                         </div>
+                        @include('partials.metadata_instansi')
+
                     </form>
                 </div>
             </div>

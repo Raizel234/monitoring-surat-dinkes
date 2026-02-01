@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuratKeluarController extends Controller
 {
@@ -58,7 +59,11 @@ class SuratKeluarController extends Controller
             'tujuan' => 'required',
             'perihal' => 'required',
             'file_surat' => 'nullable|mimes:pdf|max:2048',
-            'status' => 'required',
+
+            'sifat_surat' => 'nullable|in:Biasa,Segera,Rahasia',
+            'jenis_surat' => 'nullable|string|max:100',
+            'klasifikasi' => 'nullable|string|max:100',
+            'unit_pengolah' => 'nullable|string|max:100',
         ]);
 
         // upload file
@@ -98,13 +103,17 @@ class SuratKeluarController extends Controller
         // 💾 SIMPAN DATA
         // ===============================
         $surat = SuratKeluar::create([
-            'nomor_agenda' => $nomorAgenda,
             'nomor_surat' => $request->nomor_surat,
             'tanggal_surat' => $request->tanggal_surat,
             'tujuan' => $request->tujuan,
             'perihal' => $request->perihal,
             'file_surat' => $file,
             'status' => $request->status,
+
+            'sifat_surat' => $request->sifat_surat,
+            'jenis_surat' => $request->jenis_surat,
+            'klasifikasi' => $request->klasifikasi,
+            'unit_pengolah' => $request->unit_pengolah,
         ]);
 
         // ===============================
@@ -126,6 +135,19 @@ class SuratKeluarController extends Controller
     {
         $data = SuratKeluar::findOrFail($id);
 
+        $request->validate([
+            'nomor_surat' => 'required',
+            'tanggal_surat' => 'required',
+            'tujuan' => 'required',
+            'perihal' => 'required',
+            'file_surat' => 'nullable|mimes:pdf|max:2048',
+
+            'sifat_surat' => 'nullable|in:Biasa,Segera,Rahasia',
+            'jenis_surat' => 'nullable|string|max:100',
+            'klasifikasi' => 'nullable|string|max:100',
+            'unit_pengolah' => 'nullable|string|max:100',
+        ]);
+
         if ($request->hasFile('file_surat')) {
             $file = $request->file('file_surat')->store('surat', 'public');
             $data->file_surat = $file;
@@ -137,7 +159,13 @@ class SuratKeluarController extends Controller
             'tujuan' => $request->tujuan,
             'perihal' => $request->perihal,
             'status' => $request->status,
+
+            'sifat_surat' => $request->sifat_surat,
+            'jenis_surat' => $request->jenis_surat,
+            'klasifikasi' => $request->klasifikasi,
+            'unit_pengolah' => $request->unit_pengolah,
         ]);
+
         logAktivitas('Edit Surat Keluar', 'Surat Keluar', 'SuratKeluar', $data->id, 'Mengubah surat keluar nomor: ' . $data->nomor_surat);
 
         return redirect()->route('surat-keluar.index')->with('success', 'Data surat keluar berhasil diperbarui');
@@ -161,5 +189,36 @@ class SuratKeluarController extends Controller
         $timeline = \App\Models\ActivityLog::where('target_type', 'SuratKeluar')->where('target_id', $data->id)->latest()->get();
 
         return view('surat_keluar.show', compact('data', 'timeline'));
+    }
+    public function lembarKendaliPdf($id)
+    {
+        $surat = SuratKeluar::findOrFail($id);
+
+        $instansi = [
+            'nama' => 'DINAS KESEHATAN KABUPATEN SUMENEP',
+            'alamat' => 'Jl. Jokotole No. 05 Sumenep Jawa Timur',
+            'telp' => '(0328) 662122',
+            'email' => 'dinkessumenep@gmail.com',
+            'logo' => public_path('images/avatar/Lambang_Kabupaten_Sumenep.png'),
+        ];
+
+        $ttd = [
+            'jabatan' => 'Sekretaris',
+            'nama' => 'Slamet Boedihardjo, S.Sos., M.Si',
+            'nip' => 'NIP. ____________________',
+        ];
+
+        // nama file aman (hindari / dan \ supaya tidak error)
+        $safeAgenda = preg_replace('/[\/\\\\]+/', '-', (string) ($surat->nomor_agenda ?? 'AGENDA'));
+        $safeNoSurat = preg_replace('/[\/\\\\]+/', '-', (string) $surat->nomor_surat);
+
+        $pdf = Pdf::loadView('surat_keluar.pdf_lembar_kendali', [
+            'surat' => $surat,
+            'instansi' => $instansi,
+            'ttd' => $ttd,
+            'tanggalCetak' => now()->translatedFormat('d F Y'),
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->download("lembar-kendali-keluar-{$safeAgenda}-{$safeNoSurat}.pdf");
     }
 }

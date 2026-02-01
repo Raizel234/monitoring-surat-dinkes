@@ -167,6 +167,8 @@
                             <i class="bi bi-check-circle me-2"></i> Perbarui Data Surat
                         </button>
                     </div>
+                    @include('partials.metadata_instansi')
+
                 </form>
             </div>
         </div>

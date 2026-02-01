@@ -162,6 +162,8 @@
                             <i class="bi bi-cloud-arrow-up me-2"></i> Simpan Data Surat
                         </button>
                     </div>
+                    @include('partials.metadata_instansi')
+
                 </form>
             </div>
         </div>

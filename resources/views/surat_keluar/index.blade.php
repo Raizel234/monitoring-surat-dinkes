@@ -175,6 +175,13 @@
                                     <i class="bi bi-calendar3 me-1"></i>
                                     {{ \Carbon\Carbon::parse($d->tanggal_surat)->format('d/m/Y') }}
                                 </div>
+                                @if ($d->sifat_surat || $d->klasifikasi || $d->unit_pengolah)
+                                    <div class="small text-muted mt-1">
+                                        {{ $d->sifat_surat ? 'Sifat: ' . $d->sifat_surat : '' }}
+                                        {{ $d->klasifikasi ? ' | Klas: ' . $d->klasifikasi : '' }}
+                                        {{ $d->unit_pengolah ? ' | Unit: ' . $d->unit_pengolah : '' }}
+                                    </div>
+                                @endif
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">

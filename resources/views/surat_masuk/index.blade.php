@@ -191,6 +191,13 @@
                                         Disposisi: {{ $d->disposisis_count ?? 0 }}
                                     </span>
                                 </div>
+                                @if ($d->sifat_surat || $d->klasifikasi || $d->unit_pengolah)
+                                    <div class="small text-muted mt-1">
+                                        {{ $d->sifat_surat ? 'Sifat: ' . $d->sifat_surat : '' }}
+                                        {{ $d->klasifikasi ? ' | Klas: ' . $d->klasifikasi : '' }}
+                                        {{ $d->unit_pengolah ? ' | Unit: ' . $d->unit_pengolah : '' }}
+                                    </div>
+                                @endif
                             </td>
 
                             <td>
