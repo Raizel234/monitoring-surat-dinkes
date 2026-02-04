@@ -222,7 +222,7 @@
                 <td class="colon">:</td>
                 <td>{{ $surat->sifat_surat ?? '-' }}</td>
 
-                <td class="label"><b>Klasifikasi</b></td>
+                <td class="label"><b>Tujuan</b></td>
                 <td class="colon">:</td>
                 <td>{{ $surat->klasifikasi ?? '-' }}</td>
             </tr>

@@ -61,9 +61,9 @@ class SuratMasukController extends Controller
             'tanggal_surat' => 'required',
             'pengirim' => 'required',
             'perihal' => 'required',
-            'file_surat' => 'nullable|mimes:pdf|max:2048',
+            'file_surat' => 'nullable|mimes:pdf|max:5060',
 
-            'sifat_surat' => 'nullable|in:Biasa,Segera,Rahasia',
+            'sifat_surat' => 'nullable|in:Biasa,Penting,Rahasia',
             'jenis_surat' => 'nullable|string|max:100',
             'klasifikasi' => 'nullable|string|max:100',
             'unit_pengolah' => 'nullable|string|max:100',
@@ -144,7 +144,7 @@ class SuratMasukController extends Controller
             'pengirim' => 'required|string|max:255',
             'perihal' => 'required|string|max:255',
             'status' => 'nullable|in:Diterima,Diproses,Selesai',
-            'file_surat' => 'nullable|mimes:pdf|max:2048',
+            'file_surat' => 'nullable|mimes:pdf|max:5060',
 
             // ✅ metadata instansi (opsional)
             'sifat_surat' => 'nullable|in:Biasa,Penting,Rahasia',

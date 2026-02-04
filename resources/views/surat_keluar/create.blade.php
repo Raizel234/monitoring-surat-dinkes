@@ -149,7 +149,7 @@
                                 <label class="form-label"><i class="bi bi-file-earmark-pdf"></i>File Scan Surat (PDF)</label>
                                 <input type="file" name="file_surat" class="form-control" accept=".pdf">
                                 <div class="mt-2 small text-muted">
-                                    <i class="bi bi-info-circle me-1"></i> Format PDF, Max size 2MB
+                                    <i class="bi bi-info-circle me-1"></i> Format PDF, Max size 5MB
                                 </div>
                             </div>
 

@@ -141,7 +141,7 @@
                             <div class="input-group">
                                 <input type="file" name="file_surat" class="form-control" id="inputGroupFile01" accept=".pdf">
                             </div>
-                            <small class="text-muted mt-2 d-block">Maksimal ukuran file: 2MB</small>
+                            <small class="text-muted mt-2 d-block">Maksimal ukuran file: 5MB</small>
                         </div>
 
                         <div class="col-md-5">

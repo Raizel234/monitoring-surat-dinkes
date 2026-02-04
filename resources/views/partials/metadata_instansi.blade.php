@@ -13,9 +13,9 @@
                 {{ old('sifat_surat', $data->sifat_surat ?? '')=='Biasa' ? 'selected':'' }}>
                 Biasa
             </option>
-            <option value="Segera"
-                {{ old('sifat_surat', $data->sifat_surat ?? '')=='Segera' ? 'selected':'' }}>
-                Segera
+            <option value="Penting"
+                {{ old('sifat_surat', $data->sifat_surat ?? '')=='Penting' ? 'selected':'' }}>
+                Penting
             </option>
             <option value="Rahasia"
                 {{ old('sifat_surat', $data->sifat_surat ?? '')=='Rahasia' ? 'selected':'' }}>
@@ -33,11 +33,11 @@
     </div>
 
     <div class="col-md-3">
-        <label class="form-label fw-semibold">Klasifikasi</label>
+        <label class="form-label fw-semibold">Tujuan</label>
         <input type="text" name="klasifikasi"
                value="{{ old('klasifikasi', $data->klasifikasi ?? '') }}"
                class="form-control rounded-3"
-               placeholder="Contoh: TU / Keu / Kepeg">
+               placeholder="Contoh: TU / Kepala Dinas">
     </div>
 
     <div class="col-md-3">

@@ -58,9 +58,9 @@ class SuratKeluarController extends Controller
             'tanggal_surat' => 'required',
             'tujuan' => 'required',
             'perihal' => 'required',
-            'file_surat' => 'nullable|mimes:pdf|max:2048',
+            'file_surat' => 'nullable|mimes:pdf|max:5060',
 
-            'sifat_surat' => 'nullable|in:Biasa,Segera,Rahasia',
+            'sifat_surat' => 'nullable|in:Biasa,Penting,Rahasia',
             'jenis_surat' => 'nullable|string|max:100',
             'klasifikasi' => 'nullable|string|max:100',
             'unit_pengolah' => 'nullable|string|max:100',
@@ -140,9 +140,9 @@ class SuratKeluarController extends Controller
             'tanggal_surat' => 'required',
             'tujuan' => 'required',
             'perihal' => 'required',
-            'file_surat' => 'nullable|mimes:pdf|max:2048',
+            'file_surat' => 'nullable|mimes:pdf|max:5060',
 
-            'sifat_surat' => 'nullable|in:Biasa,Segera,Rahasia',
+            'sifat_surat' => 'nullable|in:Biasa,Penting,Rahasia',
             'jenis_surat' => 'nullable|string|max:100',
             'klasifikasi' => 'nullable|string|max:100',
             'unit_pengolah' => 'nullable|string|max:100',
