@@ -5,16 +5,38 @@
             color: #198754;
             font-weight: 700;
         }
+
         .table-card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             background: white;
         }
+
+        /* FIX: icon pagination Laravel/Tailwind yang kebesaran */
+        nav[role="navigation"] svg,
+        .pagination svg {
+            width: 16px !important;
+            height: 16px !important;
+        }
+
+        /* Kadang class Tailwind w-5 h-5 kebaca jadi gede karena CSS ketimpa */
+        .w-5.h-5 {
+            width: 16px !important;
+            height: 16px !important;
+        }
+
+        /* Biar tombol pagination tetap rapi */
+        nav[role="navigation"] a,
+        nav[role="navigation"] span {
+            line-height: 1 !important;
+        }
+
         .table thead {
             background-color: #f8f9fa;
         }
+
         .table thead th {
             border: none;
             color: #495057;
@@ -23,16 +45,19 @@
             letter-spacing: 1px;
             padding: 15px;
         }
+
         .table tbody td {
             padding: 15px;
             vertical-align: middle;
             color: #444;
             border-bottom: 1px solid #f1f1f1;
         }
+
         .table tbody tr:hover {
             background-color: #f9fffb;
             transition: 0.2s;
         }
+
         .badge-type {
             padding: 6px 12px;
             border-radius: 8px;
@@ -109,7 +134,7 @@
             </table>
         </div>
 
-        @if(method_exists($data, 'links'))
+        @if (method_exists($data, 'links'))
             <div class="p-3">
                 {{ $data->links() }}
             </div>
