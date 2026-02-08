@@ -88,9 +88,7 @@
             <h4 class="page-title mb-0">Data Surat Keluar</h4>
             <p class="text-muted small mb-0">Arsip surat yang dikirimkan oleh Dinas Kesehatan Sumenep.</p>
         </div>
-        <a href="{{ route('surat-keluar.create') }}" class="btn btn-success btn-add">
-            <i class="bi bi-send-plus me-2"></i> Tambah Surat Keluar
-        </a>
+       
     </div>
 
     {{-- ✅ Form Filter & Search --}}

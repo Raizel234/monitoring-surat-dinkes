@@ -97,9 +97,7 @@
             <h4 class="page-title mb-0">Data Surat Masuk</h4>
             <p class="text-muted small mb-0">Manajemen administrasi surat yang masuk ke sistem.</p>
         </div>
-        <a href="{{ route('surat-masuk.create') }}" class="btn btn-success btn-add">
-            <i class="bi bi-plus-lg me-2"></i> Tambah Surat
-        </a>
+       
     </div>
 
     {{-- ✅ FILTER & SEARCH --}}

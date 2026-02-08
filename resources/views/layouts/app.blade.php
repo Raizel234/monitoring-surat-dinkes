@@ -50,8 +50,8 @@
         }
 
         /* =========================
-       SIDEBAR
-    ========================= */
+           SIDEBAR
+        ========================= */
         .sidebar {
             background: linear-gradient(180deg, var(--dinas-dark) 0%, var(--dinas-primary) 100%);
             color: #fff;
@@ -271,8 +271,52 @@
         }
 
         /* =========================
-       TOPBAR (Instansi style)
-    ========================= */
+           DROPDOWN MENU (Collapse)
+        ========================= */
+        .nav-collapse {
+            padding-left: 38px;
+            margin-bottom: 8px;
+        }
+
+        .nav-sub {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 12px;
+            margin-bottom: 6px;
+            text-decoration: none;
+            color: rgba(255, 255, 255, .86);
+            font-weight: 650;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.03);
+            transition: .18s;
+        }
+
+        .nav-sub:hover {
+            background: rgba(255, 255, 255, 0.10);
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        .nav-sub.active {
+            background: rgba(255, 193, 7, 0.95);
+            color: var(--dinas-dark);
+            border-color: rgba(255, 193, 7, 0.35);
+        }
+
+        .caret {
+            margin-left: auto;
+            transition: transform .18s ease;
+        }
+
+        .nav-link[aria-expanded="true"] .caret {
+            transform: rotate(180deg);
+        }
+
+        /* =========================
+           TOPBAR
+        ========================= */
         .topbar {
             position: sticky;
             top: 0;
@@ -342,30 +386,6 @@
             text-overflow: ellipsis;
         }
 
-        .breadcrumb-lite {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 3px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .crumb {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 2px 8px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            background: rgba(255, 255, 255, .6);
-        }
-
-        body.dark-mode .crumb {
-            background: rgba(255, 255, 255, .05);
-        }
-
         .topbar-right {
             display: flex;
             align-items: center;
@@ -405,44 +425,9 @@
             font-weight: 900;
         }
 
-        .quick-btn {
-            border: 0;
-            border-radius: 14px;
-            padding: 10px 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 800;
-            transition: .2s;
-        }
-
-        .quick-btn.primary {
-            background: var(--dinas-primary);
-            color: #fff;
-        }
-
-        .quick-btn.primary:hover {
-            filter: brightness(0.95);
-            transform: translateY(-1px);
-        }
-
-        .quick-btn.light {
-            background: rgba(0, 0, 0, .06);
-            color: var(--text);
-        }
-
-        body.dark-mode .quick-btn.light {
-            background: rgba(255, 255, 255, .07);
-            color: var(--text);
-        }
-
-        .quick-btn.light:hover {
-            transform: translateY(-1px);
-        }
-
         /* =========================
-       CONTENT
-    ========================= */
+           CONTENT
+        ========================= */
         .content-wrapper {
             margin-left: var(--sidebar-width);
             padding: 18px 30px 30px;
@@ -470,8 +455,8 @@
         }
 
         /* =========================
-       MINI SIDEBAR
-    ========================= */
+           MINI SIDEBAR
+        ========================= */
         body.sidebar-mini .sidebar {
             width: var(--sidebar-mini);
         }
@@ -488,7 +473,8 @@
         body.sidebar-mini .sidebar-user .ms-3,
         body.sidebar-mini .nav-label,
         body.sidebar-mini .nav-text,
-        body.sidebar-mini #themeToggle .left span {
+        body.sidebar-mini #themeToggle .left span,
+        body.sidebar-mini .nav-collapse {
             display: none !important;
         }
 
@@ -526,8 +512,8 @@
         }
 
         /* =========================
-       MOBILE
-    ========================= */
+           MOBILE
+        ========================= */
         .sidebar-fab {
             display: none;
             position: fixed;
@@ -583,21 +569,26 @@
 <body>
 
     @php
-        // Breadcrumb sederhana berdasarkan route name (biar terasa instansi)
         $routeName = \Illuminate\Support\Facades\Route::currentRouteName() ?? '';
         $map = [
             'dashboard' => ['Dashboard', 'Ringkasan dan statistik sistem'],
+
             'surat-masuk.index' => ['Surat Masuk', 'Daftar surat masuk dan disposisi'],
-            'surat-masuk.create' => ['Tambah Surat Masuk', 'Input surat masuk baru'],
+            'surat-masuk.create' => ['Register Surat Masuk', 'Input surat masuk baru'],
+
             'surat-keluar.index' => ['Surat Keluar', 'Daftar surat keluar'],
-            'surat-keluar.create' => ['Tambah Surat Keluar', 'Input surat keluar baru'],
+            'surat-keluar.create' => ['Register Surat Keluar', 'Input surat keluar baru'],
+
             'laporan.surat_masuk' => ['Laporan Surat Masuk', 'Filter dan cetak laporan'],
             'laporan.surat_keluar' => ['Laporan Surat Keluar', 'Filter dan cetak laporan'],
             'activity-logs.index' => ['Log Aktivitas', 'Riwayat aktivitas pengguna'],
         ];
 
         $title = $map[$routeName][0] ?? 'Sistem Monitoring Surat';
-        $desc = $map[$routeName][1] ?? 'Dinas Kesehatan Kabupaten Sumenep';
+        $desc  = $map[$routeName][1] ?? 'Dinas Kesehatan Kabupaten Sumenep';
+
+        $openSuratMasuk  = request()->routeIs('surat-masuk.*');
+        $openSuratKeluar = request()->routeIs('surat-keluar.*');
     @endphp
 
     <header class="topbar">
@@ -609,8 +600,6 @@
             <div class="topbar-title-wrap">
                 <div class="topbar-title">{{ $title }}</div>
                 <div class="topbar-sub">{{ $desc }}</div>
-
-                
             </div>
         </div>
 
@@ -630,8 +619,6 @@
                     <div class="value">{{ now()->translatedFormat('d M Y') }}</div>
                 </div>
             </div>
-
-            
         </div>
     </header>
 
@@ -665,20 +652,71 @@
 
             <nav class="nav flex-column">
                 <div class="nav-label">Main Menu</div>
+
                 <a href="{{ route('dashboard') }}"
                     class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-grid-1x2-fill"></i> <span class="nav-text">Dashboard</span>
                 </a>
 
                 <div class="nav-label">Manajemen Surat</div>
-                <a href="{{ route('surat-masuk.index') }}"
-                    class="nav-link {{ request()->routeIs('surat-masuk.*') ? 'active' : '' }}">
-                    <i class="bi bi-envelope-paper-fill"></i> <span class="nav-text">Surat Masuk</span>
+
+                {{-- ✅ DROPDOWN SURAT MASUK --}}
+                <a class="nav-link {{ $openSuratMasuk ? 'active' : '' }}"
+                   data-bs-toggle="collapse"
+                   href="#suratMasukMenu"
+                   role="button"
+                   aria-expanded="{{ $openSuratMasuk ? 'true' : 'false' }}"
+                   aria-controls="suratMasukMenu">
+                    <i class="bi bi-envelope-paper-fill"></i>
+                    <span class="nav-text">Surat Masuk</span>
+                    <i class="bi bi-chevron-down caret"></i>
                 </a>
-                <a href="{{ route('surat-keluar.index') }}"
-                    class="nav-link {{ request()->routeIs('surat-keluar.*') ? 'active' : '' }}">
-                    <i class="bi bi-send-fill"></i> <span class="nav-text">Surat Keluar</span>
+
+                <div class="collapse {{ $openSuratMasuk ? 'show' : '' }}" id="suratMasukMenu">
+                    <div class="nav-collapse">
+                        <a href="{{ route('surat-masuk.create') }}"
+                           class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
+                            <i class="bi bi-plus-circle"></i>
+                            <span class="nav-text">Register Surat Masuk</span>
+                        </a>
+
+                        <a href="{{ route('surat-masuk.index') }}"
+                           class="nav-sub {{ request()->routeIs('surat-masuk.index') ? 'active' : '' }}">
+                            <i class="bi bi-journal-text"></i>
+                            <span class="nav-text">Log Surat Masuk</span>
+                        </a>
+
+                       
+                    </div>
+                </div>
+
+                {{-- ✅ DROPDOWN SURAT KELUAR --}}
+                <a class="nav-link {{ $openSuratKeluar ? 'active' : '' }}"
+                   data-bs-toggle="collapse"
+                   href="#suratKeluarMenu"
+                   role="button"
+                   aria-expanded="{{ $openSuratKeluar ? 'true' : 'false' }}"
+                   aria-controls="suratKeluarMenu">
+                    <i class="bi bi-send-fill"></i>
+                    <span class="nav-text">Surat Keluar</span>
+                    <i class="bi bi-chevron-down caret"></i>
                 </a>
+
+                <div class="collapse {{ $openSuratKeluar ? 'show' : '' }}" id="suratKeluarMenu">
+                    <div class="nav-collapse">
+                        <a href="{{ route('surat-keluar.create') }}"
+                           class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
+                            <i class="bi bi-plus-circle"></i>
+                            <span class="nav-text">Register Surat Keluar</span>
+                        </a>
+
+                        <a href="{{ route('surat-keluar.index') }}"
+                           class="nav-sub {{ request()->routeIs('surat-keluar.index') ? 'active' : '' }}">
+                            <i class="bi bi-journal-text"></i>
+                            <span class="nav-text">Log Surat Keluar</span>
+                        </a>
+                    </div>
+                </div>
 
                 <div class="nav-label">Laporan</div>
                 <a href="{{ route('laporan.surat_masuk') }}"
@@ -697,7 +735,7 @@
                 </a>
 
                 <div class="nav-label">Pengaturan</div>
-                <a href="/profile" class="nav-link">
+                <a href="{{ route('profile.edit') }}" class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <i class="bi bi-person-gear"></i> <span class="nav-text">Profil Saya</span>
                 </a>
             </nav>
@@ -732,17 +770,11 @@
 
     <script>
         // ===== CLOCK REALTIME =====
-        function pad(n) {
-            return n.toString().padStart(2, '0');
-        }
-
+        function pad(n) { return n.toString().padStart(2, '0'); }
         function updateClock() {
             const now = new Date();
-            const h = pad(now.getHours());
-            const m = pad(now.getMinutes());
-            const s = pad(now.getSeconds());
             const el = document.getElementById('clockText');
-            if (el) el.textContent = `${h}:${m}:${s}`;
+            if (el) el.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
         }
         updateClock();
         setInterval(updateClock, 1000);
@@ -754,11 +786,8 @@
         sidebarFab?.addEventListener('click', () => {
             sidebar.classList.toggle('show');
             const icon = sidebarFab.querySelector('i');
-            if (sidebar.classList.contains('show')) {
-                icon.classList.replace('bi-list', 'bi-x-lg');
-            } else {
-                icon.classList.replace('bi-x-lg', 'bi-list');
-            }
+            if (sidebar.classList.contains('show')) icon.classList.replace('bi-list', 'bi-x-lg');
+            else icon.classList.replace('bi-x-lg', 'bi-list');
         });
 
         document.addEventListener('click', (e) => {
@@ -772,12 +801,10 @@
 
         // ===== DESKTOP MINI SIDEBAR =====
         const desktopMiniToggle = document.getElementById('desktopMiniToggle');
-
         function applyMiniState(isMini) {
             document.body.classList.toggle('sidebar-mini', isMini);
             localStorage.setItem('sidebarMini', isMini ? '1' : '0');
         }
-
         const savedMini = localStorage.getItem('sidebarMini');
         if (savedMini === '1' && window.innerWidth > 992) applyMiniState(true);
 
@@ -787,9 +814,8 @@
         });
 
         window.addEventListener('resize', () => {
-            if (window.innerWidth <= 992) {
-                document.body.classList.remove('sidebar-mini');
-            } else {
+            if (window.innerWidth <= 992) document.body.classList.remove('sidebar-mini');
+            else {
                 const saved = localStorage.getItem('sidebarMini');
                 if (saved === '1') document.body.classList.add('sidebar-mini');
             }
@@ -815,5 +841,4 @@
     </script>
 
 </body>
-
 </html>
