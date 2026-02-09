@@ -458,6 +458,99 @@
                 height: 80px;
             }
         }
+
+        /* =========================
+           NEWS SLIDER (Berita geser kanan)
+        ========================== */
+        .news-slider {
+            position: relative;
+        }
+
+        .news-track {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            padding: 6px 2px 14px;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .news-track::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .news-track::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, .12);
+            border-radius: 999px;
+        }
+
+        .news-track::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, .04);
+            border-radius: 999px;
+        }
+
+        .news-item {
+            flex: 0 0 auto;
+            width: 340px;
+            scroll-snap-align: start;
+        }
+
+        @media (max-width: 992px) {
+            .news-item {
+                width: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .news-item {
+                width: 86vw;
+            }
+        }
+
+        .news-nav-btn {
+            position: absolute;
+            top: 40%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 0, 0, .10);
+            background: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, .12);
+            z-index: 5;
+            transition: .2s ease;
+        }
+
+        .news-nav-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .news-nav-btn.prev {
+            left: -12px;
+        }
+
+        .news-nav-btn.next {
+            right: -12px;
+        }
+
+        @media (max-width: 576px) {
+            .news-nav-btn.prev {
+                left: 6px;
+            }
+
+            .news-nav-btn.next {
+                right: 6px;
+            }
+        }
+
+        .news-slider-pad {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
     </style>
 </head>
 
@@ -518,6 +611,7 @@
                     <li class="nav-item"><a class="nav-link" href="#struktur">Struktural</a></li>
                     <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#berita">Berita</a></li>
 
                     @auth
                         <li class="nav-item ms-lg-2">
@@ -777,10 +871,10 @@
     </section>
 
     {{-- =========================
-   SECTION BERITA & KEGIATAN
-========================== --}}
+       SECTION BERITA & KEGIATAN (SLIDER GESER KANAN/KIRI)
+    ========================== --}}
     @php
-        $beritas = \App\Models\Berita::where('is_publish', 1)->latest()->take(6)->get();
+        $beritas = \App\Models\Berita::where('is_publish', 1)->latest()->take(10)->get();
     @endphp
 
     <section class="section-padding bg-white" id="berita">
@@ -801,60 +895,73 @@
                 </div>
             </div>
 
-            <div class="row g-4">
-                @forelse($beritas as $b)
-                    <div class="col-lg-4 col-md-6" data-aos="fade-up">
-                        <div class="custom-card h-100 shadow-sm overflow-hidden">
-                            <div style="height:200px; overflow:hidden;">
-                                @if ($b->gambar)
-                                    <img src="{{ asset('storage/' . $b->gambar) }}" alt=""
-                                        style="width:100%; height:100%; object-fit:cover;">
-                                @else
-                                    <div
-                                        class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
-                                        <i class="bi bi-image fs-1"></i>
+            @if($beritas->count())
+                <div class="news-slider">
+                    <button type="button" class="news-nav-btn prev" id="newsPrev" aria-label="Sebelumnya">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button type="button" class="news-nav-btn next" id="newsNext" aria-label="Berikutnya">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+
+                    <div class="news-slider-pad">
+                        <div class="news-track" id="newsTrack">
+                            @foreach($beritas as $b)
+                                <div class="news-item" data-aos="fade-up">
+                                    <div class="custom-card h-100 shadow-sm overflow-hidden">
+                                        <div style="height:200px; overflow:hidden;">
+                                            @if ($b->gambar)
+                                                <img
+                                                    src="{{ asset('storage/' . $b->gambar) }}"
+                                                    alt="{{ $b->judul }}"
+                                                    style="width:100%; height:100%; object-fit:cover;">
+                                            @else
+                                                <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
+                                                    <i class="bi bi-image fs-1"></i>
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <div class="p-4">
+                                            <span class="badge bg-success-subtle text-success mb-2">
+                                                {{ $b->kategori ?? 'Berita' }}
+                                            </span>
+
+                                            <h5 class="fw-bold mb-2">{{ $b->judul }}</h5>
+
+                                            <p class="text-muted small mb-3">
+                                                {{ \Illuminate\Support\Str::limit(strip_tags($b->ringkasan ?? $b->konten), 120) }}
+                                            </p>
+
+                                            <a href="{{ route('berita.public.show', $b->slug) }}" class="fw-bold text-success">
+                                                Baca Selengkapnya <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                @endif
-                            </div>
-                            <div class="p-4">
-                                <span class="badge bg-success-subtle text-success mb-2">
-                                    {{ $b->kategori ?? 'Berita' }}
-                                </span>
-                                <h5 class="fw-bold mb-2">{{ $b->judul }}</h5>
-                                <p class="text-muted small mb-3">
-                                    {{ Str::limit(strip_tags($b->ringkasan ?? $b->konten), 120) }}
-                                </p>
-                                <a href="{{ route('berita.public.show', $b->slug) }}" class="fw-bold text-success">
-                                    Baca Selengkapnya <i class="bi bi-arrow-right"></i>
-                                </a>
-                            </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="small text-muted mt-2">
+                            <i class="bi bi-mouse2-fill me-1"></i>
+                            Geser ke kanan/kiri (scroll) atau pakai tombol panah.
                         </div>
                     </div>
-                @empty
-                    <div class="col-12 text-center text-muted py-5">
-                        <i class="bi bi-info-circle fs-1 d-block mb-2"></i>
-                        Belum ada berita dipublikasikan.
-                    </div>
-                @endforelse
-            </div>
+                </div>
+            @else
+                <div class="col-12 text-center text-muted py-5">
+                    <i class="bi bi-info-circle fs-1 d-block mb-2"></i>
+                    Belum ada berita dipublikasikan.
+                </div>
+            @endif
         </div>
     </section>
-
-    {{-- =========================
-   SECTION DOKUMEN PUBLIK
-========================== --}}
-
-
 
     {{-- STATS --}}
     @php
         $totalMasuk = \App\Models\SuratMasuk::count();
         $totalKeluar = \App\Models\SuratKeluar::count();
-
-        // Jika kamu belum punya tabel unit, pakai angka manual dulu:
         $totalUnit = 38;
-
-        // Jam layanan manual
         $jamLayanan = 24;
     @endphp
 
@@ -906,7 +1013,6 @@
             </div>
         </div>
     </section>
-
 
     {{-- ALUR --}}
     <section class="section-padding pt-0" id="alur">
@@ -1044,8 +1150,7 @@
                 @foreach ($pejabat as $i => $p)
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ 100 + $i * 60 }}">
                         <div class="custom-card h-100 shadow-sm text-center p-4">
-                            <img src="{{ $p['img'] }}" class="profile-img rounded-circle mx-auto mb-3"
-                                alt="">
+                            <img src="{{ $p['img'] }}" class="profile-img rounded-circle mx-auto mb-3" alt="">
                             <span class="badge bg-success-subtle text-success mb-2 px-3 py-2 rounded-pill fw-bold"
                                 style="font-family: 'Inter',sans-serif;">
                                 {{ $p['jabatan'] }}
@@ -1115,7 +1220,6 @@
                                 <div class="accordion-body text-muted">
                                     Bisa. QR biasanya ditaruh di PDF (laporan/kendali/disposisi) dan mengarah ke halaman
                                     verifikasi publik.
-                                    Kalau kamu mau, aku bisa buatkan modul verifikasi + halaman publiknya.
                                 </div>
                             </div>
                         </div>
@@ -1251,6 +1355,7 @@
                         <a class="footer-link" href="#alur">Alur</a>
                         <a class="footer-link" href="#faq">FAQ</a>
                         <a class="footer-link" href="#kontak">Kontak</a>
+                        <a class="footer-link" href="#berita">Berita</a>
                     </div>
                 </div>
 
@@ -1368,6 +1473,33 @@
             });
             obs.observe(statSection);
         }
+
+        // =========================
+        // NEWS SLIDER CONTROLS
+        // =========================
+        (function () {
+            const track = document.getElementById('newsTrack');
+            const prev = document.getElementById('newsPrev');
+            const next = document.getElementById('newsNext');
+
+            if (!track || !prev || !next) return;
+
+            function getStep() {
+                const first = track.querySelector('.news-item');
+                if (!first) return 320;
+                const style = window.getComputedStyle(track);
+                const gap = parseInt(style.columnGap || style.gap || '18', 10) || 18;
+                return first.getBoundingClientRect().width + gap;
+            }
+
+            prev.addEventListener('click', () => {
+                track.scrollBy({ left: -getStep(), behavior: 'smooth' });
+            });
+
+            next.addEventListener('click', () => {
+                track.scrollBy({ left: getStep(), behavior: 'smooth' });
+            });
+        })();
     </script>
 
 </body>

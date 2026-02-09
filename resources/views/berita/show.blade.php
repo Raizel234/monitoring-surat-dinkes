@@ -6,11 +6,30 @@
 <section class="py-5" style="background:#f6f8fb;">
     <div class="container">
         <div class="row g-4">
+
+            {{-- KONTEN UTAMA --}}
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm" style="border-radius:18px; overflow:hidden;">
+
+                    {{-- FOTO BERITA (BANNER PENUH, NO WHITE SPACE, TIDAK TERPOTONG) --}}
                     @if($berita->gambar)
-                        <img src="{{ asset('storage/'.$berita->gambar) }}" alt="{{ $berita->judul }}"
-                             style="width:100%;height:340px;object-fit:cover;">
+                        <div style="
+                            position:relative;
+                            width:100%;
+                            background: linear-gradient(135deg, rgba(15,81,50,.10), rgba(255,193,7,.10));
+                            border-bottom:1px solid rgba(0,0,0,.06);
+                            ">
+                            <img
+                                src="{{ asset('storage/'.$berita->gambar) }}"
+                                alt="{{ $berita->judul }}"
+                                style="
+                                    width:100%;
+                                    height:auto;           /* IKUT RASIO ASLI (TIDAK KE-POTONG) */
+                                    max-height:520px;      /* BATAS TINGGI BIAR PROPORSIONAL */
+                                    display:block;
+                                "
+                            >
+                        </div>
                     @endif
 
                     <div class="card-body p-4 p-md-5">
@@ -38,12 +57,13 @@
                 </div>
 
                 <div class="mt-4">
-                    <a href="{{ route('berita.public.index') }}" class="btn btn-outline-success rounded-pill fw-bold">
+                    <a href="/" class="btn btn-outline-success rounded-pill fw-bold">
                         <i class="bi bi-arrow-left me-2"></i>Kembali ke Berita
                     </a>
                 </div>
             </div>
 
+            {{-- SIDEBAR BERITA TERKAIT --}}
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm" style="border-radius:18px;">
                     <div class="card-body p-4">
@@ -77,6 +97,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>

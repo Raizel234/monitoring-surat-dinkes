@@ -25,7 +25,7 @@ class BeritaController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'kategori' => 'nullable|string|max:100',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10000',
             'ringkasan' => 'nullable|string',
             'konten' => 'required|string',
             'is_publish' => 'nullable|boolean',
@@ -73,7 +73,7 @@ class BeritaController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'kategori' => 'nullable|string|max:100',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10000',
             'ringkasan' => 'nullable|string',
             'konten' => 'required|string',
             'is_publish' => 'nullable|boolean',
