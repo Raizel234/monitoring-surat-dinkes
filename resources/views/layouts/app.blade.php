@@ -79,8 +79,8 @@
         }
 
         .sidebar-brand img {
-            height: 50px;
-            width: 50px;
+            height: 54px;
+            width: 54px;
             object-fit: contain;
             flex: 0 0 auto;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .25));
@@ -113,6 +113,21 @@
             letter-spacing: .65px;
             margin-top: 4px;
             opacity: .95;
+        }
+
+        .instansi-badge {
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 850;
+            font-size: .72rem;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            width: fit-content;
         }
 
         .sidebar-scroll {
@@ -179,7 +194,7 @@
             align-items: center;
             gap: 12px;
             transition: 0.18s ease;
-            font-weight: 600;
+            font-weight: 650;
             border: 1px solid rgba(255, 255, 255, 0.06);
             background: rgba(255, 255, 255, 0.00);
         }
@@ -219,59 +234,8 @@
             border-radius: 99px;
         }
 
-        .theme-toggle {
-            background: rgba(255, 255, 255, 0.10);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #fff;
-            margin: 0 15px 8px;
-            padding: 10px 12px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            transition: 0.2s;
-            cursor: pointer;
-            width: calc(100% - 30px);
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.14);
-        }
-
-        .theme-toggle .left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: .92rem;
-            white-space: nowrap;
-        }
-
-        .btn-logout {
-            background: rgba(255, 255, 255, 0.10);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #fff;
-            margin: 12px 15px 16px;
-            padding: 12px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: calc(100% - 30px);
-            transition: 0.2s;
-            font-weight: 700;
-        }
-
-        .btn-logout:hover {
-            background: #dc3545;
-            border-color: #dc3545;
-            color: #fff;
-        }
-
         /* =========================
-           DROPDOWN MENU (Collapse)
+           DROPDOWN MENU
         ========================= */
         .nav-collapse {
             padding-left: 38px;
@@ -364,11 +328,6 @@
             background: rgba(255, 255, 255, .06);
         }
 
-        .topbar-title-wrap {
-            min-width: 0;
-            line-height: 1.1;
-        }
-
         .topbar-title {
             font-weight: 900;
             font-size: 14px;
@@ -425,6 +384,57 @@
             font-weight: 900;
         }
 
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #fff;
+            margin: 0 15px 8px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            transition: 0.2s;
+            cursor: pointer;
+            width: calc(100% - 30px);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .theme-toggle .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 750;
+            font-size: .92rem;
+            white-space: nowrap;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #fff;
+            margin: 12px 15px 16px;
+            padding: 12px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: calc(100% - 30px);
+            transition: 0.2s;
+            font-weight: 800;
+        }
+
+        .btn-logout:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: #fff;
+        }
+
         /* =========================
            CONTENT
         ========================= */
@@ -474,7 +484,8 @@
         body.sidebar-mini .nav-label,
         body.sidebar-mini .nav-text,
         body.sidebar-mini #themeToggle .left span,
-        body.sidebar-mini .nav-collapse {
+        body.sidebar-mini .nav-collapse,
+        body.sidebar-mini .instansi-badge {
             display: none !important;
         }
 
@@ -503,10 +514,7 @@
             transform: none;
         }
 
-        body.sidebar-mini .theme-toggle {
-            justify-content: center;
-        }
-
+        body.sidebar-mini .theme-toggle,
         body.sidebar-mini .btn-logout {
             justify-content: center;
         }
@@ -570,6 +578,7 @@
 
     @php
         $routeName = \Illuminate\Support\Facades\Route::currentRouteName() ?? '';
+
         $map = [
             'dashboard' => ['Dashboard', 'Ringkasan dan statistik sistem'],
 
@@ -581,7 +590,15 @@
 
             'laporan.surat_masuk' => ['Laporan Surat Masuk', 'Filter dan cetak laporan'],
             'laporan.surat_keluar' => ['Laporan Surat Keluar', 'Filter dan cetak laporan'],
+
             'activity-logs.index' => ['Log Aktivitas', 'Riwayat aktivitas pengguna'],
+
+            // Konten Publik (Admin)
+            'admin.berita.index' => ['Berita (Admin)', 'Kelola berita dan kegiatan'],
+            'admin.berita.create' => ['Tambah Berita', 'Input berita baru'],
+            'admin.berita.edit' => ['Edit Berita', 'Perbarui berita'],
+
+            'dokumen-publik.index' => ['Dokumen Publik', 'Kelola dokumen publik'],
         ];
 
         $title = $map[$routeName][0] ?? 'Sistem Monitoring Surat';
@@ -589,6 +606,8 @@
 
         $openSuratMasuk  = request()->routeIs('surat-masuk.*');
         $openSuratKeluar = request()->routeIs('surat-keluar.*');
+
+        $openKontenPublik = request()->routeIs('admin.berita.*') || request()->routeIs('dokumen-publik.*');
     @endphp
 
     <header class="topbar">
@@ -597,7 +616,7 @@
                 <i class="bi bi-list fs-3"></i>
             </button>
 
-            <div class="topbar-title-wrap">
+            <div style="min-width:0;line-height:1.1;">
                 <div class="topbar-title">{{ $title }}</div>
                 <div class="topbar-sub">{{ $desc }}</div>
             </div>
@@ -627,7 +646,11 @@
             <img src="/images/avatar/Lambang_Kabupaten_Sumenep.png" alt="Logo Sumenep">
             <div class="brand-text">
                 <span class="main">DINAS KESEHATAN</span>
-                <span class="sub">Pengendalian Penduduk dan Keluarga Berencana</span>
+                <span class="sub">KABUPATEN SUMENEP</span>
+                <span class="instansi-badge">
+                    <i class="bi bi-shield-lock-fill text-warning"></i>
+                    SIMONAS
+                </span>
             </div>
         </div>
 
@@ -652,7 +675,6 @@
 
             <nav class="nav flex-column">
                 <div class="nav-label">Main Menu</div>
-
                 <a href="{{ route('dashboard') }}"
                     class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-grid-1x2-fill"></i> <span class="nav-text">Dashboard</span>
@@ -660,7 +682,7 @@
 
                 <div class="nav-label">Manajemen Surat</div>
 
-                {{-- ✅ DROPDOWN SURAT MASUK --}}
+                {{-- ✅ Dropdown Surat Masuk --}}
                 <a class="nav-link {{ $openSuratMasuk ? 'active' : '' }}"
                    data-bs-toggle="collapse"
                    href="#suratMasukMenu"
@@ -671,7 +693,6 @@
                     <span class="nav-text">Surat Masuk</span>
                     <i class="bi bi-chevron-down caret"></i>
                 </a>
-
                 <div class="collapse {{ $openSuratMasuk ? 'show' : '' }}" id="suratMasukMenu">
                     <div class="nav-collapse">
                         <a href="{{ route('surat-masuk.create') }}"
@@ -686,11 +707,12 @@
                             <span class="nav-text">Log Surat Masuk</span>
                         </a>
 
-                       
+                        {{-- Disposisi butuh id -> arahkan ke log --}}
+                        
                     </div>
                 </div>
 
-                {{-- ✅ DROPDOWN SURAT KELUAR --}}
+                {{-- ✅ Dropdown Surat Keluar --}}
                 <a class="nav-link {{ $openSuratKeluar ? 'active' : '' }}"
                    data-bs-toggle="collapse"
                    href="#suratKeluarMenu"
@@ -701,7 +723,6 @@
                     <span class="nav-text">Surat Keluar</span>
                     <i class="bi bi-chevron-down caret"></i>
                 </a>
-
                 <div class="collapse {{ $openSuratKeluar ? 'show' : '' }}" id="suratKeluarMenu">
                     <div class="nav-collapse">
                         <a href="{{ route('surat-keluar.create') }}"
@@ -734,8 +755,36 @@
                     <i class="bi bi-clock-history"></i> <span class="nav-text">Log Aktivitas</span>
                 </a>
 
+                {{-- ✅ KONTEN PUBLIK (Berita + Dokumen) --}}
+                <div class="nav-label">Konten Publik</div>
+
+                {{-- Dropdown Konten Publik --}}
+                <a class="nav-link {{ $openKontenPublik ? 'active' : '' }}"
+                   data-bs-toggle="collapse"
+                   href="#kontenPublikMenu"
+                   role="button"
+                   aria-expanded="{{ $openKontenPublik ? 'true' : 'false' }}"
+                   aria-controls="kontenPublikMenu">
+                    <i class="bi bi-megaphone-fill"></i>
+                    <span class="nav-text">Berita & Dokumen</span>
+                    <i class="bi bi-chevron-down caret"></i>
+                </a>
+
+                <div class="collapse {{ $openKontenPublik ? 'show' : '' }}" id="kontenPublikMenu">
+                    <div class="nav-collapse">
+                        <a href="{{ route('admin.berita.index') }}"
+                           class="nav-sub {{ request()->routeIs('admin.berita.*') ? 'active' : '' }}">
+                            <i class="bi bi-newspaper"></i>
+                            <span class="nav-text">Kelola Berita</span>
+                        </a>
+
+                        
+                    </div>
+                </div>
+
                 <div class="nav-label">Pengaturan</div>
-                <a href="{{ route('profile.edit') }}" class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                <a href="{{ route('profile.edit') }}"
+                   class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <i class="bi bi-person-gear"></i> <span class="nav-text">Profil Saya</span>
                 </a>
             </nav>
@@ -801,10 +850,12 @@
 
         // ===== DESKTOP MINI SIDEBAR =====
         const desktopMiniToggle = document.getElementById('desktopMiniToggle');
+
         function applyMiniState(isMini) {
             document.body.classList.toggle('sidebar-mini', isMini);
             localStorage.setItem('sidebarMini', isMini ? '1' : '0');
         }
+
         const savedMini = localStorage.getItem('sidebarMini');
         if (savedMini === '1' && window.innerWidth > 992) applyMiniState(true);
 
@@ -814,8 +865,9 @@
         });
 
         window.addEventListener('resize', () => {
-            if (window.innerWidth <= 992) document.body.classList.remove('sidebar-mini');
-            else {
+            if (window.innerWidth <= 992) {
+                document.body.classList.remove('sidebar-mini');
+            } else {
                 const saved = localStorage.getItem('sidebarMini');
                 if (saved === '1') document.body.classList.add('sidebar-mini');
             }
