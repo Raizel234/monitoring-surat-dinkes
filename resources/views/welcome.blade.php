@@ -843,7 +843,7 @@
     {{-- =========================
    SECTION DOKUMEN PUBLIK
 ========================== --}}
-   
+
 
 
     {{-- STATS --}}
@@ -900,9 +900,6 @@
                                 </div>
                             </div>
 
-                            <div class="small mt-2" style="color: rgba(255,255,255,.70);">
-                                *Surat Masuk & Surat Keluar otomatis dari database.
-                            </div>
                         </div>
                     </div>
                 </div>
