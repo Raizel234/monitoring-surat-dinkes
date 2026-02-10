@@ -9,31 +9,30 @@
         <label class="form-label fw-semibold">Sifat Surat</label>
         <select name="sifat_surat" class="form-select rounded-3">
             <option value="">- Pilih -</option>
-            <option value="Biasa"
-                {{ old('sifat_surat', $data->sifat_surat ?? '')=='Biasa' ? 'selected':'' }}>
+            <option value="Biasa" {{ old('sifat_surat', $data->sifat_surat ?? '')=='Biasa' ? 'selected':'' }}>
                 Biasa
             </option>
-            <option value="Penting"
-                {{ old('sifat_surat', $data->sifat_surat ?? '')=='Penting' ? 'selected':'' }}>
+            <option value="Penting" {{ old('sifat_surat', $data->sifat_surat ?? '')=='Penting' ? 'selected':'' }}>
                 Penting
             </option>
-            <option value="Rahasia"
-                {{ old('sifat_surat', $data->sifat_surat ?? '')=='Rahasia' ? 'selected':'' }}>
+            <option value="Rahasia" {{ old('sifat_surat', $data->sifat_surat ?? '')=='Rahasia' ? 'selected':'' }}>
                 Rahasia
             </option>
         </select>
     </div>
 
     <div class="col-md-3">
-        <label class="form-label fw-semibold">Jenis Surat</label>
-        <input type="text" name="jenis_surat"
-               value="{{ old('jenis_surat', $data->jenis_surat ?? '') }}"
+        <label class="form-label fw-semibold">Jenis Surat (Kategori)</label>
+        <input type="text"
+               name="kategori_surat"
+               value="{{ old('kategori_surat', $data->kategori_surat ?? '') }}"
                class="form-control rounded-3"
                placeholder="Contoh: Undangan / Permohonan">
+        <div class="text-muted small mt-1">Ini kategori manual, beda dengan template cetak.</div>
     </div>
 
     <div class="col-md-3">
-        <label class="form-label fw-semibold">Tujuan</label>
+        <label class="form-label fw-semibold">Tujuan (Klasifikasi)</label>
         <input type="text" name="klasifikasi"
                value="{{ old('klasifikasi', $data->klasifikasi ?? '') }}"
                class="form-control rounded-3"

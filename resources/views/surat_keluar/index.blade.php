@@ -3,7 +3,6 @@
         .page-title {
             font-family: 'Playfair Display', serif;
             color: #0f5132;
-            /* Hijau lebih gelap untuk Surat Keluar */
             font-weight: 700;
         }
 
@@ -61,6 +60,8 @@
             font-weight: 600;
             font-size: 0.7rem;
             text-transform: uppercase;
+            display: inline-block;
+            min-width: 88px;
         }
 
         .action-btn {
@@ -74,21 +75,52 @@
             border: none;
         }
 
-        /* ✅ Filter card (ringan, tidak merusak tampilan) */
         .filter-card {
             border: none;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             background: #fff;
         }
+
+        .meta-pill {
+            font-size: 0.72rem;
+            border-radius: 999px;
+            padding: 4px 10px;
+            border: 1px solid rgba(0,0,0,0.08);
+            background: #fff;
+            color: #666;
+        }
     </style>
+
+    @php
+        $templateLabels = [
+            'lembar_kendali' => 'Lembar Kendali',
+            'nota_dinas' => 'Nota Dinas',
+            'surat_keputusan' => 'SK',
+        ];
+
+        function statusBadgeClass($status) {
+            return match ($status) {
+                'Draft' => 'bg-light text-dark border',
+                'Dikirim' => 'bg-warning text-dark',
+                'Terkirim' => 'bg-success text-white',
+                'Selesai' => 'bg-primary text-white',
+                default => 'bg-secondary text-white',
+            };
+        }
+    @endphp
 
     <div class="d-flex justify-content-between align-items-center mb-4 px-2">
         <div>
             <h4 class="page-title mb-0">Data Surat Keluar</h4>
             <p class="text-muted small mb-0">Arsip surat yang dikirimkan oleh Dinas Kesehatan Sumenep.</p>
         </div>
-       
+
+        <div class="d-flex gap-2">
+            <a href="{{ route('surat-keluar.create') }}" class="btn btn-success btn-add">
+                <i class="bi bi-plus-circle me-1"></i> Tambah Surat Keluar
+            </a>
+        </div>
     </div>
 
     {{-- ✅ Form Filter & Search --}}
@@ -107,19 +139,15 @@
                         <select name="status" class="form-select rounded-3">
                             <option value="">Semua</option>
                             <option value="Draft" {{ request('status') == 'Draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="Dikirim" {{ request('status') == 'Dikirim' ? 'selected' : '' }}>Dikirim
-                            </option>
-                            <option value="Terkirim" {{ request('status') == 'Terkirim' ? 'selected' : '' }}>Terkirim
-                            </option>
-                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai
-                            </option>
+                            <option value="Dikirim" {{ request('status') == 'Dikirim' ? 'selected' : '' }}>Dikirim</option>
+                            <option value="Terkirim" {{ request('status') == 'Terkirim' ? 'selected' : '' }}>Terkirim</option>
+                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Dari Tanggal</label>
-                        <input type="date" name="from" value="{{ request('from') }}"
-                            class="form-control rounded-3">
+                        <input type="date" name="from" value="{{ request('from') }}" class="form-control rounded-3">
                     </div>
 
                     <div class="col-md-2">
@@ -164,23 +192,50 @@
                 </thead>
                 <tbody>
                     @forelse ($data as $d)
+                        @php
+                            $jenis = $d->jenis_surat ?? 'lembar_kendali';
+                            $jenisLabel = $templateLabels[$jenis] ?? $jenis;
+                        @endphp
                         <tr>
-                            <td class="text-center fw-bold text-muted">{{ $loop->iteration }}</td>
+                            <td class="text-center fw-bold text-muted">{{ ($data->currentPage() - 1) * $data->perPage() + $loop->iteration }}</td>
+
                             <td>
                                 <div class="fw-bold text-dark">{{ $d->nomor_surat }}</div>
-                                <div class="small text-muted">Agenda: {{ $d->nomor_agenda }}</div>
+
+                                <div class="small text-muted">
+                                    Agenda: {{ $d->nomor_agenda ?? '-' }}
+                                    <span class="ms-2 meta-pill">
+                                        <i class="bi bi-layout-text-sidebar-reverse me-1"></i>{{ $jenisLabel }}
+                                    </span>
+                                </div>
+
                                 <div class="small text-muted">
                                     <i class="bi bi-calendar3 me-1"></i>
-                                    {{ \Carbon\Carbon::parse($d->tanggal_surat)->format('d/m/Y') }}
+                                    @if(!empty($d->tanggal_surat))
+                                        {{ \Carbon\Carbon::parse($d->tanggal_surat)->format('d/m/Y') }}
+                                    @else
+                                        -
+                                    @endif
                                 </div>
-                                @if ($d->sifat_surat || $d->klasifikasi || $d->unit_pengolah)
+
+                                @if ($d->sifat_surat || $d->klasifikasi || $d->unit_pengolah || $d->kategori_surat)
                                     <div class="small text-muted mt-1">
-                                        {{ $d->sifat_surat ? 'Sifat: ' . $d->sifat_surat : '' }}
-                                        {{ $d->klasifikasi ? ' | Klas: ' . $d->klasifikasi : '' }}
-                                        {{ $d->unit_pengolah ? ' | Unit: ' . $d->unit_pengolah : '' }}
+                                        @if($d->kategori_surat)
+                                            Jenis: {{ $d->kategori_surat }}
+                                        @endif
+                                        @if($d->sifat_surat)
+                                            {{ $d->kategori_surat ? ' | ' : '' }}Sifat: {{ $d->sifat_surat }}
+                                        @endif
+                                        @if($d->klasifikasi)
+                                            {{ ($d->kategori_surat || $d->sifat_surat) ? ' | ' : '' }}Klas: {{ $d->klasifikasi }}
+                                        @endif
+                                        @if($d->unit_pengolah)
+                                            {{ ($d->kategori_surat || $d->sifat_surat || $d->klasifikasi) ? ' | ' : '' }}Unit: {{ $d->unit_pengolah }}
+                                        @endif
                                     </div>
                                 @endif
                             </td>
+
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light p-2 rounded-3 me-2 text-primary">
@@ -189,6 +244,7 @@
                                     <span class="fw-medium text-secondary">{{ $d->tujuan }}</span>
                                 </div>
                             </td>
+
                             <td class="text-center">
                                 @if ($d->file_surat)
                                     <a href="{{ asset('storage/' . $d->file_surat) }}" target="_blank"
@@ -199,23 +255,24 @@
                                     <span class="badge bg-light text-muted border fw-normal">Kosong</span>
                                 @endif
                             </td>
+
                             <td class="text-center">
-                                <span
-                                    class="badge-status {{ $d->status == 'Terkirim' ? 'bg-success text-white' : 'bg-warning text-dark' }}">
-                                    {{ $d->status }}
+                                <span class="badge-status {{ statusBadgeClass($d->status) }}">
+                                    {{ $d->status ?? '-' }}
                                 </span>
                             </td>
+
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
                                     <a href="{{ route('surat-keluar.edit', $d->id) }}"
-                                        class="btn btn-warning action-btn text-white" title="Edit Surat">
+                                       class="btn btn-warning action-btn text-white" title="Edit Surat">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
+
                                     <a href="{{ route('surat-keluar.show', $d->id) }}"
-                                        class="btn btn-info action-btn text-white" title="Detail & Timeline">
+                                       class="btn btn-info action-btn text-white" title="Detail & Timeline">
                                         <i class="bi bi-eye"></i>
                                     </a>
-
 
                                     <form action="{{ route('surat-keluar.destroy', $d->id) }}" method="POST"
                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus data surat ini?')">
@@ -230,7 +287,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
                                     <p class="mb-0 fw-bold">Belum Ada Data</p>
@@ -242,5 +299,12 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- pagination --}}
+        @if(method_exists($data, 'links'))
+            <div class="p-3">
+                {{ $data->withQueryString()->links() }}
+            </div>
+        @endif
     </div>
 </x-app-layout>

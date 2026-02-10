@@ -222,7 +222,7 @@
                 <td class="colon">:</td>
                 <td>{{ $surat->sifat_surat ?? '-' }}</td>
 
-                <td class="label"><b>Tujuan</b></td>
+                <td class="label"><b>Dari</b></td>
                 <td class="colon">:</td>
                 <td>{{ $surat->klasifikasi ?? '-' }}</td>
             </tr>
@@ -250,38 +250,6 @@
         </table>
     </div>
 
-    {{-- RIWAYAT PENGIRIMAN / CATATAN --}}
-    <div class="box">
-        <b>Riwayat Pengiriman (Manual)</b>
-        <table class="data">
-            <thead>
-                <tr>
-                    <th style="width:30px;">No</th>
-                    <th style="width:120px;">Media</th>
-                    <th>Tanggal</th>
-                    <th>Petugas</th>
-                    <th>Keterangan</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{-- karena belum ada tabel riwayat pengiriman, dibuat template manual --}}
-                <tr>
-                    <td style="text-align:center;">1</td>
-                    <td style="text-align:center;">□ Kurir □ Email □ Ekspedisi</td>
-                    <td style="text-align:center;">__/__/____</td>
-                    <td style="text-align:center;">____________</td>
-                    <td>____________________________</td>
-                </tr>
-                <tr>
-                    <td style="text-align:center;">2</td>
-                    <td style="text-align:center;">□ Kurir □ Email □ Ekspedisi</td>
-                    <td style="text-align:center;">__/__/____</td>
-                    <td style="text-align:center;">____________</td>
-                    <td>____________________________</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 
     {{-- TTD --}}
     <div class="footer">

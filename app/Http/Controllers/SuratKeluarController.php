@@ -4,45 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use BaconQrCode\Writer;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+
+// ✅ Simple QrCode
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class SuratKeluarController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $q = $request->q; // keyword
-        $status = $request->status; // status
-        $from = $request->from; // tanggal awal
-        $to = $request->to; // tanggal akhir
-
-        $query = SuratKeluar::query();
-
-        // ✅ Search: nomor surat / tujuan / perihal
-        if ($q) {
-            $query->where(function ($sub) use ($q) {
-                $sub->where('nomor_surat', 'like', "%$q%")
-                    ->orWhere('tujuan', 'like', "%$q%")
-                    ->orWhere('perihal', 'like', "%$q%");
-            });
-        }
-
-        // ✅ Filter status
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        // ✅ Filter tanggal (range)
-        if ($from && $to) {
-            $query->whereBetween('tanggal_surat', [$from, $to]);
-        } elseif ($from) {
-            $query->whereDate('tanggal_surat', '>=', $from);
-        } elseif ($to) {
-            $query->whereDate('tanggal_surat', '<=', $to);
-        }
-
-        $data = $query->latest()->get();
-
+        $data = SuratKeluar::latest()->paginate(10);
         return view('surat_keluar.index', compact('data'));
     }
 
@@ -53,172 +29,152 @@ class SuratKeluarController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nomor_surat' => 'required',
-            'tanggal_surat' => 'required',
-            'tujuan' => 'required',
-            'perihal' => 'required',
-            'file_surat' => 'nullable|mimes:pdf|max:5060',
+        $validated = $request->validate([
+            'nomor_surat' => 'required|string|max:255',
+            'tanggal_surat' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'status' => 'nullable|string|max:50',
 
-            'sifat_surat' => 'nullable|in:Biasa,Penting,Rahasia',
-            'jenis_surat' => 'nullable|string|max:100',
+            'jenis_surat' => 'required|in:lembar_kendali,nota_dinas,surat_keputusan',
+
+            'sifat_surat' => 'nullable|string|max:100',
             'klasifikasi' => 'nullable|string|max:100',
             'unit_pengolah' => 'nullable|string|max:100',
+
+            'yth' => 'nullable|string|max:255',
+            'dari' => 'nullable|string|max:255',
+            'tembusan' => 'nullable|string',
+            'lampiran' => 'nullable|string|max:255',
+            'isi' => 'nullable|string',
+
+            'jabatan_ttd' => 'nullable|string|max:255',
+            'nama_ttd' => 'nullable|string|max:255',
+            'nip_ttd' => 'nullable|string|max:255',
+            'pangkat_ttd' => 'nullable|string|max:255',
+
+            'file_surat' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
-        // upload file
-        $file = null;
         if ($request->hasFile('file_surat')) {
-            $file = $request->file('file_surat')->store('surat', 'public');
+            $validated['file_surat'] = $request->file('file_surat')->store('surat_keluar', 'public');
         }
 
-        // ===============================
-        // 🔢 GENERATE NOMOR AGENDA OTOMATIS
-        // ===============================
-        $tahun = Carbon::parse($request->tanggal_surat)->year;
+        $validated['nomor_agenda'] = 'AGK-' . now()->format('YmdHis');
 
-        $last = SuratKeluar::whereYear('tanggal_surat', $tahun)->orderBy('id', 'desc')->first();
+        $surat = SuratKeluar::create($validated);
 
-        $urutan = $last ? ((int) substr($last->nomor_agenda, 4, 4)) + 1 : 1;
-
-        $bulanRomawi = [
-            1 => 'I',
-            2 => 'II',
-            3 => 'III',
-            4 => 'IV',
-            5 => 'V',
-            6 => 'VI',
-            7 => 'VII',
-            8 => 'VIII',
-            9 => 'IX',
-            10 => 'X',
-            11 => 'XI',
-            12 => 'XII',
-        ];
-
-        $bulan = $bulanRomawi[Carbon::parse($request->tanggal_surat)->month];
-        $nomorAgenda = 'AGK-' . str_pad($urutan, 4, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
-
-        // ===============================
-        // 💾 SIMPAN DATA
-        // ===============================
-        $surat = SuratKeluar::create([
-            'nomor_surat' => $request->nomor_surat,
-            'tanggal_surat' => $request->tanggal_surat,
-            'tujuan' => $request->tujuan,
-            'perihal' => $request->perihal,
-            'file_surat' => $file,
-            'status' => $request->status,
-
-            'sifat_surat' => $request->sifat_surat,
-            'jenis_surat' => $request->jenis_surat,
-            'klasifikasi' => $request->klasifikasi,
-            'unit_pengolah' => $request->unit_pengolah,
-        ]);
-
-        // ===============================
-        // 📝 LOG AKTIVITAS
-        // ===============================
-        logAktivitas('Tambah Surat Keluar', 'Surat Keluar', 'SuratKeluar', $surat->id, 'Menambahkan surat keluar | Agenda: ' . $nomorAgenda . ' | Nomor Surat: ' . $surat->nomor_surat);
-
-        return redirect()->route('surat-keluar.index')->with('success', 'Data surat keluar berhasil disimpan');
+        return redirect()->route('surat-keluar.show', $surat->id)->with('success', 'Surat keluar berhasil disimpan.');
     }
 
-    public function edit($id)
+    public function show(SuratKeluar $suratKeluar)
     {
-        $data = SuratKeluar::findOrFail($id);
+        $data = $suratKeluar;
+        return view('surat_keluar.show', compact('data'));
+    }
 
+    public function edit(SuratKeluar $suratKeluar)
+    {
+        $data = $suratKeluar;
         return view('surat_keluar.edit', compact('data'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, SuratKeluar $suratKeluar)
     {
-        $data = SuratKeluar::findOrFail($id);
+        $validated = $request->validate([
+            'nomor_surat' => 'required|string|max:255',
+            'tanggal_surat' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'status' => 'nullable|string|max:50',
 
-        $request->validate([
-            'nomor_surat' => 'required',
-            'tanggal_surat' => 'required',
-            'tujuan' => 'required',
-            'perihal' => 'required',
-            'file_surat' => 'nullable|mimes:pdf|max:5060',
+            'jenis_surat' => 'required|in:lembar_kendali,nota_dinas,surat_keputusan',
 
-            'sifat_surat' => 'nullable|in:Biasa,Penting,Rahasia',
-            'jenis_surat' => 'nullable|string|max:100',
+            'sifat_surat' => 'nullable|string|max:100',
             'klasifikasi' => 'nullable|string|max:100',
             'unit_pengolah' => 'nullable|string|max:100',
+
+            'yth' => 'nullable|string|max:255',
+            'dari' => 'nullable|string|max:255',
+            'tembusan' => 'nullable|string',
+            'lampiran' => 'nullable|string|max:255',
+            'isi' => 'nullable|string',
+
+            'jabatan_ttd' => 'nullable|string|max:255',
+            'nama_ttd' => 'nullable|string|max:255',
+            'nip_ttd' => 'nullable|string|max:255',
+            'pangkat_ttd' => 'nullable|string|max:255',
+
+            'file_surat' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
         if ($request->hasFile('file_surat')) {
-            $file = $request->file('file_surat')->store('surat', 'public');
-            $data->file_surat = $file;
+            if ($suratKeluar->file_surat) {
+                Storage::disk('public')->delete($suratKeluar->file_surat);
+            }
+            $validated['file_surat'] = $request->file('file_surat')->store('surat_keluar', 'public');
         }
 
-        $data->update([
-            'nomor_surat' => $request->nomor_surat,
-            'tanggal_surat' => $request->tanggal_surat,
-            'tujuan' => $request->tujuan,
-            'perihal' => $request->perihal,
-            'status' => $request->status,
+        $suratKeluar->update($validated);
 
-            'sifat_surat' => $request->sifat_surat,
-            'jenis_surat' => $request->jenis_surat,
-            'klasifikasi' => $request->klasifikasi,
-            'unit_pengolah' => $request->unit_pengolah,
-        ]);
-
-        logAktivitas('Edit Surat Keluar', 'Surat Keluar', 'SuratKeluar', $data->id, 'Mengubah surat keluar nomor: ' . $data->nomor_surat);
-
-        return redirect()->route('surat-keluar.index')->with('success', 'Data surat keluar berhasil diperbarui');
+        return redirect()->route('surat-keluar.show', $suratKeluar->id)->with('success', 'Surat keluar berhasil diupdate.');
     }
 
-    public function destroy($id)
+    public function destroy(SuratKeluar $suratKeluar)
     {
-        $data = SuratKeluar::findOrFail($id);
+        if ($suratKeluar->file_surat) {
+            Storage::disk('public')->delete($suratKeluar->file_surat);
+        }
 
-        logAktivitas('Hapus Surat Keluar', 'Surat Keluar', SuratKeluar::class, $data->id, 'Menghapus surat keluar nomor: ' . $data->nomor_surat);
+        $suratKeluar->delete();
 
-        $data->delete();
-
-        return redirect()->back()->with('success', 'Data berhasil dihapus');
+        return redirect()->route('surat-keluar.index')->with('success', 'Surat keluar dihapus.');
     }
-    public function show($id)
-    {
-        $data = SuratKeluar::findOrFail($id);
 
-        // Ambil timeline log aktivitas khusus surat keluar ini
-        $timeline = \App\Models\ActivityLog::where('target_type', 'SuratKeluar')->where('target_id', $data->id)->latest()->get();
-
-        return view('surat_keluar.show', compact('data', 'timeline'));
-    }
-    public function lembarKendaliPdf($id)
+    public function cetak(SuratKeluar $suratKeluar, string $template)
     {
-        $surat = SuratKeluar::findOrFail($id);
+        $allowed = ['lembar_kendali', 'nota_dinas', 'surat_keputusan'];
+        abort_unless(in_array($template, $allowed), 404);
 
         $instansi = [
-            'nama' => 'DINAS KESEHATAN KABUPATEN SUMENEP',
-            'alamat' => 'Jl. Jokotole No. 05 Sumenep Jawa Timur',
+            'pemda' => 'PEMERINTAH KABUPATEN SUMENEP',
+            'nama' => 'DINAS KESEHATAN, PENGENDALIAN PENDUDUK DAN KELUARGA BERENCANA',
+            'alamat' => 'Jl. Jokotole No. 05 Telp. (0328) 662122',
             'telp' => '(0328) 662122',
-            'email' => 'dinkessumenep@gmail.com',
+            'email' => 'dkppkbksumenep@gmail.com',
+            'kota' => 'Sumenep',
+            // ✅ sesuai lokasi file kamu
             'logo' => public_path('images/avatar/Lambang_Kabupaten_Sumenep.png'),
         ];
 
-        $ttd = [
-            'jabatan' => 'Sekretaris',
-            'nama' => 'Slamet Boedihardjo, S.Sos., M.Si',
-            'nip' => 'NIP. ____________________',
+        $viewMap = [
+            'lembar_kendali' => 'pdf.surat_keluar.lembar_kendali',
+            'nota_dinas' => 'pdf.surat_keluar.nota_dinas',
+            'surat_keputusan' => 'pdf.surat_keluar.surat_keputusan',
         ];
 
-        // nama file aman (hindari / dan \ supaya tidak error)
-        $safeAgenda = preg_replace('/[\/\\\\]+/', '-', (string) ($surat->nomor_agenda ?? 'AGENDA'));
-        $safeNoSurat = preg_replace('/[\/\\\\]+/', '-', (string) $surat->nomor_surat);
+        // ✅ URL untuk QR
+        $qrUrl = route('verifikasi.surat_keluar', $suratKeluar->id);
 
-        $pdf = Pdf::loadView('surat_keluar.pdf_lembar_kendali', [
-            'surat' => $surat,
+        // ✅ QR SVG (TIDAK PERLU IMAGICK / GD)
+        $renderer = new ImageRenderer(new RendererStyle(160), new SvgImageBackEnd());
+
+        $writer = new Writer($renderer);
+
+        // ini hasilnya string SVG
+        $qrSvgString = $writer->writeString($qrUrl);
+
+        // jadikan data-uri untuk <img src="...">
+        $qrSvg = 'data:image/svg+xml;base64,' . base64_encode($qrSvgString);
+
+        $pdf = Pdf::loadView($viewMap[$template], [
             'instansi' => $instansi,
-            'ttd' => $ttd,
+            'surat' => $suratKeluar,
             'tanggalCetak' => now()->translatedFormat('d F Y'),
-        ])->setPaper('A4', 'portrait');
+            'qrUrl' => $qrUrl,
+            'qrSvg' => $qrSvg,
+        ])->setPaper('a4', 'portrait');
 
-        return $pdf->download("lembar-kendali-keluar-{$safeAgenda}-{$safeNoSurat}.pdf");
+        return $pdf->stream($template . '_' . $suratKeluar->id . '.pdf');
     }
 }

@@ -6,23 +6,9 @@
             font-weight: 700;
         }
 
-        .card-box {
-            background: #fff;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
         .info-table td {
             padding: 8px 0;
             vertical-align: top;
-        }
-
-        .info-label {
-            width: 160px;
-            color: #666;
-            font-weight: 600;
         }
 
         .timeline-item {
@@ -63,13 +49,28 @@
             font-size: 0.72rem;
             display: inline-block;
         }
-
-        .btn-file {
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-weight: 700;
-        }
     </style>
+
+    @php
+        $templateLabels = [
+            'lembar_kendali' => 'Lembar Kendali',
+            'nota_dinas' => 'Nota Dinas',
+            'surat_keputusan' => 'Surat Keputusan (SK)',
+        ];
+
+        $jenisTemplate = $data->jenis_surat ?? 'lembar_kendali';
+        $jenisTemplateLabel = $templateLabels[$jenisTemplate] ?? $jenisTemplate;
+
+        $status = $data->status ?? '-';
+
+        $statusClass = match ($status) {
+            'Draft' => 'bg-light text-dark border',
+            'Dikirim' => 'bg-warning text-dark',
+            'Terkirim' => 'bg-success text-white',
+            'Selesai' => 'bg-primary text-white',
+            default => 'bg-secondary text-white',
+        };
+    @endphp
 
     <div class="mb-4">
         <h3 class="fw-bold text-success mb-1">Detail Surat Keluar</h3>
@@ -77,6 +78,7 @@
     </div>
 
     <div class="row g-4">
+        {{-- LEFT --}}
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
@@ -89,34 +91,33 @@
                         </tr>
                         <tr>
                             <td class="text-muted">Nomor Surat</td>
-                            <td class="fw-semibold">: {{ $data->nomor_surat }}</td>
+                            <td class="fw-semibold">: {{ $data->nomor_surat ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td class="text-muted">Tanggal Surat</td>
                             <td class="fw-semibold">:
-                                {{ \Carbon\Carbon::parse($data->tanggal_surat)->translatedFormat('d M Y') }}</td>
+                                @if(!empty($data->tanggal_surat))
+                                    {{ \Carbon\Carbon::parse($data->tanggal_surat)->translatedFormat('d M Y') }}
+                                @else
+                                    -
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <td class="text-muted">Tujuan</td>
-                            <td class="fw-semibold">: {{ $data->tujuan }}</td>
+                            <td class="fw-semibold">: {{ $data->tujuan ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td class="text-muted">Perihal</td>
-                            <td class="fw-semibold">: {{ $data->perihal }}</td>
+                            <td class="fw-semibold">: {{ $data->perihal ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td class="text-muted">Status</td>
-                            <td>
-                                @php
-                                    $badge =
-                                        $data->status === 'Terkirim' ? 'bg-success text-white' : 'bg-warning text-dark';
-                                @endphp
-                                : <span class="badge rounded-pill {{ $badge }}">{{ $data->status }}</span>
-                            </td>
+                            <td>: <span class="badge rounded-pill {{ $statusClass }}">{{ $status }}</span></td>
                         </tr>
                     </table>
 
-                    {{-- ✅ METADATA INSTANSI --}}
+                    {{-- METADATA INSTANSI --}}
                     <div class="border rounded-4 p-3 bg-light">
                         <div class="fw-bold mb-2">
                             <i class="bi bi-journal-text me-2"></i>Metadata Instansi
@@ -127,14 +128,22 @@
                                 <div class="text-muted small">Sifat Surat</div>
                                 <div class="fw-semibold">{{ $data->sifat_surat ?? '-' }}</div>
                             </div>
+
                             <div class="col-6">
-                                <div class="text-muted small">Jenis Surat</div>
-                                <div class="fw-semibold">{{ $data->jenis_surat ?? '-' }}</div>
+                                <div class="text-muted small">Template Cetak</div>
+                                <div class="fw-semibold">{{ $jenisTemplateLabel }}</div>
                             </div>
+
+                            <div class="col-6">
+                                <div class="text-muted small">Jenis Surat (Kategori)</div>
+                                <div class="fw-semibold">{{ $data->kategori_surat ?? '-' }}</div>
+                            </div>
+
                             <div class="col-6">
                                 <div class="text-muted small">Klasifikasi</div>
                                 <div class="fw-semibold">{{ $data->klasifikasi ?? '-' }}</div>
                             </div>
+
                             <div class="col-6">
                                 <div class="text-muted small">Unit Pengolah</div>
                                 <div class="fw-semibold">{{ $data->unit_pengolah ?? '-' }}</div>
@@ -142,18 +151,41 @@
                         </div>
                     </div>
 
+                    {{-- FILE + CETAK --}}
                     <div class="mt-3 d-grid gap-2">
-                        @if ($data->file_surat)
+                        @if (!empty($data->file_surat))
                             <a href="{{ asset('storage/' . $data->file_surat) }}" target="_blank"
-                                class="btn btn-primary rounded-pill">
+                               class="btn btn-primary rounded-pill">
                                 <i class="bi bi-file-earmark-pdf me-2"></i> Lihat File
                             </a>
                         @endif
 
+                        {{-- CETAK TEMPLATE BARU --}}
+                        @if (Route::has('surat-keluar.cetak'))
+                            <div class="border rounded-4 p-3">
+                                <div class="fw-bold mb-2">
+                                    <i class="bi bi-printer me-2"></i> Cetak Dokumen
+                                </div>
+
+
+
+
+                                {{-- Cetak sesuai jenis template yang dipilih saat input --}}
+                                <div class="mt-2">
+                                    <a href="{{ route('surat-keluar.cetak', [$data->id, $jenisTemplate]) }}"
+                                       class="btn btn-success w-100 rounded-pill" target="_blank">
+                                        <i class="bi bi-lightning-charge me-2"></i>
+                                        Cetak Sesuai Jenis ({{ $jenisTemplateLabel }})
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- BACKUP ROUTE LAMA (opsional) --}}
                         @if (Route::has('surat-keluar.kendali.pdf'))
                             <a href="{{ route('surat-keluar.kendali.pdf', $data->id) }}"
-                                class="btn btn-outline-dark rounded-pill">
-                                <i class="bi bi-printer me-2"></i> Cetak Lembar Kendali
+                               class="btn btn-outline-secondary rounded-pill" target="_blank">
+                                <i class="bi bi-printer me-2"></i> Cetak Lembar Kendali (Route Lama)
                             </a>
                         @endif
                     </div>
@@ -163,6 +195,7 @@
             <a href="{{ route('surat-keluar.index') }}" class="btn btn-secondary mt-3">← Kembali</a>
         </div>
 
+        {{-- RIGHT --}}
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
@@ -173,11 +206,12 @@
                             <div class="rounded-circle bg-success" style="width:12px;height:12px;"></div>
                             <div class="bg-success" style="width:2px;height:60px;margin:0 auto;"></div>
                         </div>
+
                         <div>
                             <div class="fw-bold">Tambah Surat Keluar</div>
                             <div class="text-muted small">
                                 Menambahkan surat keluar | Agenda: {{ $data->nomor_agenda ?? '-' }} | Nomor:
-                                {{ $data->nomor_surat }}
+                                {{ $data->nomor_surat ?? '-' }}
                             </div>
                             <div class="text-muted small">{{ $data->created_at?->translatedFormat('d M Y H:i') }}</div>
                         </div>
@@ -192,9 +226,9 @@
                         QR Code muncul di PDF. Scan untuk cek keaslian dan status dokumen.
                     </div>
 
-                    @if (Route::has('verifikasi.surat-keluar'))
+                    @if (Route::has('verifikasi.surat_keluar'))
                         <a class="btn btn-outline-success rounded-pill"
-                            href="{{ route('verifikasi.surat-keluar', $data->id) }}" target="_blank">
+                           href="{{ route('verifikasi.surat_keluar', $data->id) }}" target="_blank">
                             <i class="bi bi-qr-code-scan me-2"></i> Buka Halaman Verifikasi
                         </a>
                     @endif
@@ -202,5 +236,4 @@
             </div>
         </div>
     </div>
-
 </x-app-layout>

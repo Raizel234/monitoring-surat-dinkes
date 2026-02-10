@@ -317,7 +317,11 @@
                 <td class="right">
                     <div>Sumenep, {{ $tanggalCetak ?? '-' }}</div>
                     <div style="margin-top: 6px;"><b>{{ $ttd['jabatan'] ?? 'Pejabat' }}</b></div>
-                    <div class="space"></div>
+                    <div class="qr" style="margin:5px 0;">
+                        @if (!empty($qrSvg))
+                            <img src="{{ $qrSvg }}" alt="QR">
+                        @endif
+                    </div>
                     <div><b>{{ $ttd['nama'] ?? '____________________' }}</b></div>
                     <div class="small">{{ $ttd['nip'] ?? '' }}</div>
                 </td>

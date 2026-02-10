@@ -9,6 +9,10 @@ use Carbon\Carbon;
 use App\Models\ActivityLog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
+use BaconQrCode\Writer;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 
 class SuratMasukController extends Controller
 {
@@ -303,11 +307,28 @@ class SuratMasukController extends Controller
         $safeAgenda = preg_replace('/[\/\\\\]+/', '-', (string) ($surat->nomor_agenda ?? 'AGENDA'));
         $safeNoSurat = preg_replace('/[\/\\\\]+/', '-', (string) $surat->nomor_surat);
 
+         // ✅ URL untuk QR
+        $qrUrl = route('verifikasi.surat_masuk', $surat->id);
+
+        // ✅ QR SVG (TIDAK PERLU IMAGICK / GD)
+        $renderer = new ImageRenderer(new RendererStyle(160), new SvgImageBackEnd());
+
+        $writer = new Writer($renderer);
+
+        // ini hasilnya string SVG
+        $qrSvgString = $writer->writeString($qrUrl);
+
+        // jadikan data-uri untuk <img src="...">
+        $qrSvg = 'data:image/svg+xml;base64,' . base64_encode($qrSvgString);
+
+
         $pdf = Pdf::loadView('surat_masuk.pdf_lembar_kendali', [
             'surat' => $surat,
             'instansi' => $instansi,
             'ttd' => $ttd,
             'tanggalCetak' => now()->translatedFormat('d F Y'),
+            'qrUrl' => $qrUrl,
+            'qrSvg' => $qrSvg,
         ])->setPaper('A4', 'portrait');
 
         return $pdf->download("lembar-kendali-{$safeAgenda}-{$safeNoSurat}.pdf");
