@@ -151,21 +151,21 @@
         </div>
 
         {{-- opsional: kotak verifikasi --}}
-        <div class="card border-0 shadow-sm rounded-4 mt-4">
-            <div class="card-body p-4">
-                <h6 class="fw-bold mb-2">Verifikasi Dokumen</h6>
-                <div class="text-muted small mb-3">
-                    QR Code biasanya muncul di PDF (Laporan/Lembar Kendali). Saat discan akan mengarah ke halaman verifikasi.
-                </div>
+            <div class="card border-0 shadow-sm rounded-4 mt-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-2">Verifikasi Dokumen</h6>
+                    <div class="text-muted small mb-3">
+                        QR Code muncul di PDF. Scan untuk cek keaslian dan status dokumen.
+                    </div>
 
-                @if(Route::has('verifikasi.surat-masuk'))
-                    <a class="btn btn-outline-success rounded-pill"
-                       href="{{ route('verifikasi.surat-masuk', $data->id) }}" target="_blank">
-                        <i class="bi bi-qr-code-scan me-2"></i> Buka Halaman Verifikasi
-                    </a>
-                @endif
+                    @if (Route::has('verifikasi.surat_masuk'))
+                        <a class="btn btn-outline-success rounded-pill"
+                           href="{{ route('verifikasi.surat_masuk', $data->id) }}" target="_blank">
+                            <i class="bi bi-qr-code-scan me-2"></i> Buka Halaman Verifikasi
+                        </a>
+                    @endif
+                </div>
             </div>
-        </div>
     </div>
 </div>
 
