@@ -48,6 +48,13 @@ class SuratKeluarController extends Controller
             'lampiran' => 'nullable|string|max:255',
             'isi' => 'nullable|string',
 
+            'rujukan_nomor' => 'nullable|string|max:255',
+            'rujukan_perihal' => 'nullable|string|max:255',
+            'nama_peneliti' => 'nullable|string|max:255',
+            'npm' => 'nullable|string|max:255',
+            'tentang' => 'nullable|string|max:255',
+            'nama_lembaga' => 'nullable|string|max:255',
+
             'jabatan_ttd' => 'nullable|string|max:255',
             'nama_ttd' => 'nullable|string|max:255',
             'nip_ttd' => 'nullable|string|max:255',
@@ -99,6 +106,13 @@ class SuratKeluarController extends Controller
             'tembusan' => 'nullable|string',
             'lampiran' => 'nullable|string|max:255',
             'isi' => 'nullable|string',
+
+            'rujukan_nomor' => 'nullable|string|max:255',
+            'rujukan_perihal' => 'nullable|string|max:255',
+            'nama_peneliti' => 'nullable|string|max:255',
+            'npm' => 'nullable|string|max:255',
+            'tentang' => 'nullable|string|max:255',
+            'nama_lembaga' => 'nullable|string|max:255',
 
             'jabatan_ttd' => 'nullable|string|max:255',
             'nama_ttd' => 'nullable|string|max:255',
