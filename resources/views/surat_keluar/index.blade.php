@@ -1,95 +1,21 @@
 <x-app-layout>
     <style>
-        .page-title {
-            font-family: 'Playfair Display', serif;
-            color: #0f5132;
-            font-weight: 700;
-        }
-
-        .table-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            background: white;
-        }
-
-        .table thead {
-            background-color: #f8f9fa;
-        }
-
-        .table thead th {
-            border: none;
-            color: #495057;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            padding: 15px;
-        }
-
-        .table tbody td {
-            padding: 15px;
-            vertical-align: middle;
-            color: #444;
-            border-bottom: 1px solid #f1f1f1;
-        }
-
-        .table tbody tr:hover {
-            background-color: #fcfcfc;
-            transition: 0.2s;
-        }
-
-        .btn-add {
-            background-color: #198754;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .btn-add:hover {
-            background-color: #0f5132;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .badge-status {
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            display: inline-block;
-            min-width: 88px;
-        }
-
-        .action-btn {
-            width: 35px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: 0.3s;
-            border: none;
-        }
-
-        .filter-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            background: #fff;
-        }
-
-        .meta-pill {
-            font-size: 0.72rem;
-            border-radius: 999px;
-            padding: 4px 10px;
-            border: 1px solid rgba(0,0,0,0.08);
-            background: #fff;
-            color: #666;
-        }
+        .page-title { font-family: 'Playfair Display', serif; color: #0f5132; font-weight: 700; }
+        .table-card { border: none; border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); overflow: hidden; background: white; }
+        .table thead { background-color: #f8f9fa; }
+        .table thead th { border: none; color: #495057; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 15px; }
+        .table tbody td { padding: 15px; vertical-align: middle; color: #444; border-bottom: 1px solid #f1f1f1; }
+        .table tbody tr:hover { background-color: #fcfcfc; transition: 0.2s; }
+        .btn-add { background-color: #198754; border: none; border-radius: 10px; padding: 10px 20px; font-weight: 600; transition: 0.3s; }
+        .btn-add:hover { background-color: #0f5132; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .badge-status { padding: 6px 12px; border-radius: 8px; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; display: inline-block; min-width: 88px; }
+        .action-btn { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; transition: 0.3s; border: none; }
+        .filter-card { border: none; border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); background: #fff; }
+        .meta-pill { font-size: 0.72rem; border-radius: 999px; padding: 4px 10px; border: 1px solid rgba(0,0,0,0.08); background: #fff; color: #666; }
+        .tujuan-box { display:flex; flex-direction:column; gap:6px; }
+        .tujuan-title { font-size:0.7rem; text-transform:uppercase; letter-spacing:.6px; color:#8a8a8a; font-weight:700; }
+        .tujuan-value { font-weight:600; color:#2f2f2f; }
+        .tujuan-sub { font-size:.8rem; color:#6c757d; }
     </style>
 
     @php
@@ -113,7 +39,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 px-2">
         <div>
             <h4 class="page-title mb-0">Data Surat Keluar</h4>
-            <p class="text-muted small mb-0">Arsip surat yang dikirimkan oleh Dinas Kesehatan Sumenep.</p>
+            <p class="text-muted small mb-0">Arsip surat keluar. Semua pegawai dapat melihat.</p>
         </div>
 
         <div class="d-flex gap-2">
@@ -123,7 +49,7 @@
         </div>
     </div>
 
-    {{-- ✅ Form Filter & Search --}}
+    {{-- ✅ Filter --}}
     <div class="card filter-card mb-4">
         <div class="p-3">
             <form method="GET" action="{{ route('surat-keluar.index') }}">
@@ -168,7 +94,6 @@
         </div>
     </div>
 
-    {{-- Pesan sukses --}}
     @if (session('success'))
         <div class="alert alert-success border-0 shadow-sm rounded-4 d-flex align-items-center mb-4" role="alert">
             <i class="bi bi-check-all me-2 fs-4"></i>
@@ -184,20 +109,26 @@
                     <tr>
                         <th class="text-center">No</th>
                         <th>Nomor & Tanggal Surat</th>
-                        <th>Tujuan Instansi</th>
+                        <th>Tujuan</th>
                         <th class="text-center">Lampiran</th>
                         <th class="text-center">Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @forelse ($data as $d)
                         @php
                             $jenis = $d->jenis_surat ?? 'lembar_kendali';
                             $jenisLabel = $templateLabels[$jenis] ?? $jenis;
+
+                            $pegawai = $d->tujuanUser; // relation
                         @endphp
+
                         <tr>
-                            <td class="text-center fw-bold text-muted">{{ ($data->currentPage() - 1) * $data->perPage() + $loop->iteration }}</td>
+                            <td class="text-center fw-bold text-muted">
+                                {{ ($data->currentPage() - 1) * $data->perPage() + $loop->iteration }}
+                            </td>
 
                             <td>
                                 <div class="fw-bold text-dark">{{ $d->nomor_surat }}</div>
@@ -211,37 +142,51 @@
 
                                 <div class="small text-muted">
                                     <i class="bi bi-calendar3 me-1"></i>
-                                    @if(!empty($d->tanggal_surat))
-                                        {{ \Carbon\Carbon::parse($d->tanggal_surat)->format('d/m/Y') }}
-                                    @else
-                                        -
-                                    @endif
+                                    {{ !empty($d->tanggal_surat) ? \Carbon\Carbon::parse($d->tanggal_surat)->format('d/m/Y') : '-' }}
                                 </div>
 
                                 @if ($d->sifat_surat || $d->klasifikasi || $d->unit_pengolah || $d->kategori_surat)
                                     <div class="small text-muted mt-1">
-                                        @if($d->kategori_surat)
-                                            Jenis: {{ $d->kategori_surat }}
-                                        @endif
-                                        @if($d->sifat_surat)
-                                            {{ $d->kategori_surat ? ' | ' : '' }}Sifat: {{ $d->sifat_surat }}
-                                        @endif
-                                        @if($d->klasifikasi)
-                                            {{ ($d->kategori_surat || $d->sifat_surat) ? ' | ' : '' }}Klas: {{ $d->klasifikasi }}
-                                        @endif
-                                        @if($d->unit_pengolah)
-                                            {{ ($d->kategori_surat || $d->sifat_surat || $d->klasifikasi) ? ' | ' : '' }}Unit: {{ $d->unit_pengolah }}
-                                        @endif
+                                        @if($d->kategori_surat) Jenis: {{ $d->kategori_surat }} @endif
+                                        @if($d->sifat_surat) {{ $d->kategori_surat ? ' | ' : '' }}Sifat: {{ $d->sifat_surat }} @endif
+                                        @if($d->klasifikasi) {{ ($d->kategori_surat || $d->sifat_surat) ? ' | ' : '' }}Klas: {{ $d->klasifikasi }} @endif
+                                        @if($d->unit_pengolah) {{ ($d->kategori_surat || $d->sifat_surat || $d->klasifikasi) ? ' | ' : '' }}Unit: {{ $d->unit_pengolah }} @endif
                                     </div>
                                 @endif
                             </td>
 
+                            {{-- ✅ Tujuan beda: instansi vs pegawai --}}
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-light p-2 rounded-3 me-2 text-primary">
-                                        <i class="bi bi-geo-alt-fill"></i>
+                                <div class="tujuan-box">
+                                    <div class="d-flex gap-2 align-items-start">
+                                        <div class="bg-light p-2 rounded-3 text-primary">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                        </div>
+                                        <div>
+                                            <div class="tujuan-title">Tujuan Instansi</div>
+                                            <div class="tujuan-value">{{ $d->tujuan ?? '-' }}</div>
+                                        </div>
                                     </div>
-                                    <span class="fw-medium text-secondary">{{ $d->tujuan }}</span>
+
+                                    <div class="d-flex gap-2 align-items-start mt-2">
+                                        <div class="bg-light p-2 rounded-3 text-success">
+                                            <i class="bi bi-person-badge"></i>
+                                        </div>
+                                        <div>
+                                            <div class="tujuan-title">Tujuan Pegawai (Metadata)</div>
+
+                                            @if($pegawai)
+                                                <div class="tujuan-value">{{ $pegawai->name }}</div>
+                                                <div class="tujuan-sub">
+                                                    {{ $pegawai->jabatan ?? '-' }}
+                                                    {{ ($pegawai->jabatan && $pegawai->instansi) ? ' • ' : '' }}
+                                                    {{ $pegawai->instansi ?? '' }}
+                                                </div>
+                                            @else
+                                                <div class="tujuan-sub">-</div>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
 
@@ -270,7 +215,7 @@
                                     </a>
 
                                     <a href="{{ route('surat-keluar.show', $d->id) }}"
-                                       class="btn btn-info action-btn text-white" title="Detail & Timeline">
+                                       class="btn btn-info action-btn text-white" title="Detail">
                                         <i class="bi bi-eye"></i>
                                     </a>
 
@@ -291,7 +236,7 @@
                                 <div class="text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
                                     <p class="mb-0 fw-bold">Belum Ada Data</p>
-                                    <small>Silakan tambahkan surat keluar baru melalui tombol di atas.</small>
+                                    <small>Silakan tambahkan surat keluar baru.</small>
                                 </div>
                             </td>
                         </tr>
@@ -300,7 +245,6 @@
             </table>
         </div>
 
-        {{-- pagination --}}
         @if(method_exists($data, 'links'))
             <div class="p-3">
                 {{ $data->withQueryString()->links() }}

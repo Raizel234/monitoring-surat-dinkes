@@ -9,7 +9,7 @@
         .form-card {
             border: none;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             background: #fff;
         }
 
@@ -30,7 +30,9 @@
             font-size: 1.1rem;
         }
 
-        .form-control, .form-select, textarea.form-control {
+        .form-control,
+        .form-select,
+        textarea.form-control {
             border-radius: 12px;
             padding: 12px 15px;
             border: 1px solid #dee2e6;
@@ -38,7 +40,9 @@
             background-color: #fdfdfd;
         }
 
-        .form-control:focus, .form-select:focus, textarea.form-control:focus {
+        .form-control:focus,
+        .form-select:focus,
+        textarea.form-control:focus {
             border-color: #198754;
             box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
             background-color: #fff;
@@ -149,8 +153,8 @@
                             <div class="col-md-8">
                                 <label class="form-label"><i class="bi bi-hash"></i>Nomor Surat Keluar</label>
                                 <input type="text" name="nomor_surat" class="form-control"
-                                    value="{{ old('nomor_surat') }}"
-                                    placeholder="Masukan nomor resmi surat..." required>
+                                    value="{{ old('nomor_surat') }}" placeholder="Masukan nomor resmi surat..."
+                                    required>
                             </div>
 
                             <div class="col-md-4">
@@ -162,15 +166,13 @@
 
                             <div class="col-md-6">
                                 <label class="form-label"><i class="bi bi-send"></i>Tujuan Surat</label>
-                                <input type="text" name="tujuan" class="form-control"
-                                    value="{{ old('tujuan') }}"
+                                <input type="text" name="tujuan" class="form-control" value="{{ old('tujuan') }}"
                                     placeholder="Nama Instansi/Orang tujuan" required>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label"><i class="bi bi-card-text"></i>Perihal</label>
-                                <input type="text" name="perihal" class="form-control"
-                                    value="{{ old('perihal') }}"
+                                <input type="text" name="perihal" class="form-control" value="{{ old('perihal') }}"
                                     placeholder="Inti dari isi surat" required>
                             </div>
                         </div>
@@ -187,13 +189,15 @@
                             <div class="col-md-6">
                                 <label class="form-label"><i class="bi bi-layers"></i>Jenis Surat (Template PDF)</label>
                                 <select id="jenis_surat" name="jenis_surat" class="form-select" required>
-                                    <option value="lembar_kendali" {{ old('jenis_surat','lembar_kendali')=='lembar_kendali' ? 'selected' : '' }}>
+                                    <option value="lembar_kendali"
+                                        {{ old('jenis_surat', 'lembar_kendali') == 'lembar_kendali' ? 'selected' : '' }}>
                                         Lembar Kendali
                                     </option>
-                                    <option value="nota_dinas" {{ old('jenis_surat')=='nota_dinas' ? 'selected' : '' }}>
+                                    <option value="nota_dinas" {{ old('jenis_surat') == 'nota_dinas' ? 'selected' : '' }}>
                                         Nota Dinas
                                     </option>
-                                    <option value="surat_keputusan" {{ old('jenis_surat')=='surat_keputusan' ? 'selected' : '' }}>
+                                    <option value="surat_keputusan"
+                                        {{ old('jenis_surat') == 'surat_keputusan' ? 'selected' : '' }}>
                                         Surat Keputusan (SK)
                                     </option>
                                 </select>
@@ -221,7 +225,8 @@
 
                         <div class="row g-4">
                             <div class="col-md-7">
-                                <label class="form-label"><i class="bi bi-file-earmark-pdf"></i>File Scan Surat (PDF)</label>
+                                <label class="form-label"><i class="bi bi-file-earmark-pdf"></i>File Scan Surat
+                                    (PDF)</label>
                                 <input type="file" name="file_surat" class="form-control" accept=".pdf">
                                 <div class="mt-2 small text-muted">
                                     <i class="bi bi-info-circle me-1"></i> Format PDF, Max 5MB
@@ -231,13 +236,13 @@
                             <div class="col-md-5">
                                 <label class="form-label"><i class="bi bi-activity"></i>Status Awal</label>
                                 <select name="status" class="form-select">
-                                    <option value="Draft" {{ old('status','Draft')=='Draft' ? 'selected' : '' }}>
+                                    <option value="Draft" {{ old('status', 'Draft') == 'Draft' ? 'selected' : '' }}>
                                         Draft (Arsip Internal)
                                     </option>
-                                    <option value="Dikirim" {{ old('status')=='Dikirim' ? 'selected' : '' }}>
+                                    <option value="Dikirim" {{ old('status') == 'Dikirim' ? 'selected' : '' }}>
                                         Dikirim (Sudah Keluar)
                                     </option>
-                                    <option value="Selesai" {{ old('status')=='Selesai' ? 'selected' : '' }}>
+                                    <option value="Selesai" {{ old('status') == 'Selesai' ? 'selected' : '' }}>
                                         Selesai (Sudah Diterima Tujuan)
                                     </option>
                                 </select>
@@ -270,21 +275,20 @@
 
                                 <div class="col-md-12">
                                     <label class="form-label"><i class="bi bi-people"></i>Tembusan</label>
-                                    <textarea name="tembusan" class="form-control" rows="2"
-                                        placeholder="Pisahkan dengan enter jika lebih dari 1">{{ old('tembusan') }}</textarea>
+                                    <textarea name="tembusan" class="form-control" rows="2" placeholder="Pisahkan dengan enter jika lebih dari 1">{{ old('tembusan') }}</textarea>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="bi bi-paperclip"></i>Lampiran (Nota Dinas)</label>
+                                    <label class="form-label"><i class="bi bi-paperclip"></i>Lampiran (Nota
+                                        Dinas)</label>
                                     <input type="text" name="lampiran" class="form-control"
-                                        value="{{ old('lampiran') }}"
-                                        placeholder="Contoh: 1 (satu) berkas / -">
+                                        value="{{ old('lampiran') }}" placeholder="Contoh: 1 (satu) berkas / -">
                                 </div>
 
                                 <div class="col-md-12">
-                                    <label class="form-label"><i class="bi bi-body-text"></i>Isi Nota Dinas (Opsional)</label>
-                                    <textarea name="isi" class="form-control" rows="5"
-                                        placeholder="(Opsional) tambahan isi nota dinas...">{{ old('isi') }}</textarea>
+                                    <label class="form-label"><i class="bi bi-body-text"></i>Isi Nota Dinas
+                                        (Opsional)</label>
+                                    <textarea name="isi" class="form-control" rows="5" placeholder="(Opsional) tambahan isi nota dinas...">{{ old('isi') }}</textarea>
                                     <div class="hint mt-1">Bagian isi tambahan (boleh dikosongkan).</div>
                                 </div>
                             </div>
@@ -297,7 +301,8 @@
 
                             <div class="row g-4">
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="bi bi-link-45deg"></i>Nomor Surat Rujukan</label>
+                                    <label class="form-label"><i class="bi bi-link-45deg"></i>Nomor Surat
+                                        Rujukan</label>
                                     <input type="text" name="rujukan_nomor" class="form-control"
                                         value="{{ old('rujukan_nomor') }}"
                                         placeholder="Contoh: 058/D-WD.I-FIK/PP-01/UNJA/II/2026">
@@ -313,15 +318,13 @@
                                 <div class="col-md-6">
                                     <label class="form-label"><i class="bi bi-person"></i>Nama</label>
                                     <input type="text" name="nama_peneliti" class="form-control"
-                                        value="{{ old('nama_peneliti') }}"
-                                        placeholder="Contoh: Fidia Azizah">
+                                        value="{{ old('nama_peneliti') }}" placeholder="Contoh: Fidia Azizah">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label"><i class="bi bi-123"></i>NPM</label>
                                     <input type="text" name="npm" class="form-control"
-                                        value="{{ old('npm') }}"
-                                        placeholder="Contoh: 722621778">
+                                        value="{{ old('npm') }}" placeholder="Contoh: 722621778">
                                 </div>
 
                                 <div class="col-md-12">
@@ -334,8 +337,7 @@
                                 <div class="col-md-12">
                                     <label class="form-label"><i class="bi bi-building"></i>Nama Lembaga</label>
                                     <input type="text" name="nama_lembaga" class="form-control"
-                                        value="{{ old('nama_lembaga') }}"
-                                        placeholder="Contoh: Universitas Wiraraja">
+                                        value="{{ old('nama_lembaga') }}" placeholder="Contoh: Universitas Wiraraja">
                                 </div>
                             </div>
                         </div>
@@ -371,26 +373,22 @@
                             <div class="col-md-6">
                                 <label class="form-label"><i class="bi bi-award"></i>Jabatan</label>
                                 <input type="text" name="jabatan_ttd" class="form-control"
-                                    value="{{ old('jabatan_ttd','KEPALA') }}"
-                                    placeholder="Contoh: KEPALA DINAS">
+                                    value="{{ old('jabatan_ttd', 'KEPALA') }}" placeholder="Contoh: KEPALA DINAS">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label"><i class="bi bi-person"></i>Nama</label>
                                 <input type="text" name="nama_ttd" class="form-control"
-                                    value="{{ old('nama_ttd') }}"
-                                    placeholder="Nama pejabat">
+                                    value="{{ old('nama_ttd') }}" placeholder="Nama pejabat">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label"><i class="bi bi-card-heading"></i>Pangkat/Gol</label>
                                 <input type="text" name="pangkat_ttd" class="form-control"
-                                    value="{{ old('pangkat_ttd') }}"
-                                    placeholder="Contoh: Pembina Tingkat I / IV.b">
+                                    value="{{ old('pangkat_ttd') }}" placeholder="Contoh: Pembina Tingkat I / IV.b">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label"><i class="bi bi-credit-card-2-front"></i>NIP</label>
                                 <input type="text" name="nip_ttd" class="form-control"
-                                    value="{{ old('nip_ttd') }}"
-                                    placeholder="NIP pejabat">
+                                    value="{{ old('nip_ttd') }}" placeholder="NIP pejabat">
                             </div>
                         </div>
 
@@ -398,7 +396,10 @@
                         {{-- METADATA INSTANSI (punyamu) --}}
                         {{-- ======================== --}}
                         <div class="mt-5">
-                            @include('partials.metadata_instansi')
+                            @include('partials.metadata_instansi', [
+                                'context' => 'keluar',
+                                'pegawai' => $pegawai,
+                            ])
                         </div>
 
                         {{-- ======================== --}}
@@ -421,15 +422,15 @@
 
     {{-- JS: tampilkan field berdasarkan jenis surat --}}
     <script>
-        (function () {
+        (function() {
             const jenisSelect = document.getElementById('jenis_surat');
             const sectionNota = document.getElementById('section-nota-dinas');
-            const sectionSK   = document.getElementById('section-sk');
+            const sectionSK = document.getElementById('section-sk');
 
             function toggleSections() {
                 const v = (jenisSelect.value || '').trim();
                 sectionNota.style.display = (v === 'nota_dinas') ? 'block' : 'none';
-                sectionSK.style.display   = (v === 'surat_keputusan') ? 'block' : 'none';
+                sectionSK.style.display = (v === 'surat_keputusan') ? 'block' : 'none';
             }
 
             jenisSelect.addEventListener('change', toggleSections);

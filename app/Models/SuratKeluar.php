@@ -9,29 +9,32 @@ class SuratKeluar extends Model
 {
     protected $table = 'surat_keluar';
 
+
     protected $fillable = [
         'nomor_agenda',
         'nomor_surat',
-        'tanggal_keluar',
-        'tujuan',
+        'tanggal_surat',
+        'tujuan',          // tujuan instansi (utama)
         'perihal',
         'status',
-        'file_surat',
-
         'jenis_surat',
-        'kategori_surat',
+
+        // metadata instansi
         'sifat_surat',
+        'kategori_surat',
         'klasifikasi',
         'unit_pengolah',
 
+        // tujuan pegawai metadata
+        'tujuan_user_id',
+
+        // nota dinas / dll
         'yth',
         'dari',
         'tembusan',
-        'tanggal_surat',
         'lampiran',
         'isi',
 
-        // ✅ tambahan nota dinas
         'rujukan_nomor',
         'rujukan_perihal',
         'nama_peneliti',
@@ -44,6 +47,7 @@ class SuratKeluar extends Model
         'nip_ttd',
         'pangkat_ttd',
         'qr_token',
+        'file_surat',
     ];
 
     protected $casts = [
@@ -57,5 +61,10 @@ class SuratKeluar extends Model
                 $model->qr_token = (string) Str::uuid();
             }
         });
+    }
+
+    public function tujuanUser()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'tujuan_user_id');
     }
 }

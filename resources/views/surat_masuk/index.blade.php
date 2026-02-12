@@ -38,26 +38,13 @@
             transition: 0.2s;
         }
 
-        .btn-add {
-            background-color: #198754;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .btn-add:hover {
-            background-color: #146c43;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2);
-        }
-
         .badge-status {
             padding: 6px 12px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 0.7rem;
+            display: inline-block;
+            white-space: nowrap;
         }
 
         .action-btn {
@@ -70,7 +57,6 @@
             transition: 0.3s;
         }
 
-        /* ✅ Tombol Disposisi */
         .btn-disposisi {
             background-color: #0d6efd;
             color: #fff;
@@ -82,7 +68,6 @@
             box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
         }
 
-        /* ✅ Filter card (ringan, tidak merusak tampilan) */
         .filter-card {
             border: none;
             border-radius: 15px;
@@ -90,14 +75,35 @@
             overflow: hidden;
             background: white;
         }
+
+        .mini-muted { font-size: 0.8rem; color: #6c757d; }
+        .recipient-pill {
+            display:inline-flex; align-items:center; gap:6px;
+            padding:4px 10px; border-radius:999px;
+            border:1px solid #e9ecef; background:#fff;
+            font-size:0.75rem; color:#333;
+        }
     </style>
+
+    @php
+        $user = auth()->user();
+        $isAdmin = ($user && ($user->role ?? '') === 'admin');
+    @endphp
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="page-title mb-0">Data Surat Masuk</h4>
-            <p class="text-muted small mb-0">Manajemen administrasi surat yang masuk ke sistem.</p>
+            <p class="text-muted small mb-0">
+                {{ $isAdmin ? 'Manajemen administrasi surat yang masuk ke sistem.' : 'Kotak masuk surat untuk akun kamu (tujuan).' }}
+            </p>
         </div>
-       
+
+        {{-- (Opsional) tombol tambah surat hanya admin --}}
+        @if($isAdmin)
+            <a href="{{ route('surat-masuk.create') }}" class="btn btn-success rounded-pill px-4">
+                <i class="bi bi-plus-circle me-1"></i> Tambah Surat Masuk
+            </a>
+        @endif
     </div>
 
     {{-- ✅ FILTER & SEARCH --}}
@@ -115,19 +121,15 @@
                         <label class="form-label small text-muted mb-1">Status</label>
                         <select name="status" class="form-select rounded-3">
                             <option value="">Semua</option>
-                            <option value="Diterima" {{ request('status') == 'Diterima' ? 'selected' : '' }}>Diterima
-                            </option>
-                            <option value="Diproses" {{ request('status') == 'Diproses' ? 'selected' : '' }}>Diproses
-                            </option>
-                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai
-                            </option>
+                            <option value="Diterima" {{ request('status') == 'Diterima' ? 'selected' : '' }}>Diterima</option>
+                            <option value="Diproses" {{ request('status') == 'Diproses' ? 'selected' : '' }}>Diproses</option>
+                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Dari Tanggal</label>
-                        <input type="date" name="from" value="{{ request('from') }}"
-                            class="form-control rounded-3">
+                        <input type="date" name="from" value="{{ request('from') }}" class="form-control rounded-3">
                     </div>
 
                     <div class="col-md-2">
@@ -164,15 +166,37 @@
                     <tr>
                         <th class="text-center">No</th>
                         <th>Informasi Surat</th>
+
+                        {{-- ✅ kolom tujuan + status baca --}}
+                        <th>Tujuan</th>
+
                         <th>Pengirim</th>
-                        <th>Tanggal Terima</th>
+                        <th>Tanggal Surat</th>
                         <th class="text-center">File</th>
                         <th class="text-center">Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @forelse ($data as $d)
+                        @php
+                            // ambil penerima pertama (karena 1 surat = 1 tujuan pegawai)
+                            $rec = $d->recipients->first();
+
+                            // untuk pegawai: tentukan read/unread miliknya
+                            $myRec = null;
+                            if(!$isAdmin && $user){
+                                $myRec = $d->recipients->firstWhere('user_id', $user->id);
+                            }
+                            $isRead = $myRec ? !is_null($myRec->read_at) : false;
+
+                            // label penerima
+                            $recipientName = $rec?->user?->name ?? '-';
+                            $recipientJabatan = $rec?->user?->jabatan ?? '';
+                            $recipientInstansi = $rec?->user?->instansi ?? '';
+                        @endphp
+
                         <tr>
                             <td class="text-center fw-bold text-muted">{{ $loop->iteration }}</td>
 
@@ -188,7 +212,17 @@
                                     <span class="badge bg-light text-dark border">
                                         Disposisi: {{ $d->disposisis_count ?? 0 }}
                                     </span>
+
+                                    {{-- ✅ badge read/unread (khusus pegawai) --}}
+                                    @if(!$isAdmin)
+                                        @if($isRead)
+                                            <span class="badge bg-success text-white ms-1">Sudah Dibaca</span>
+                                        @else
+                                            <span class="badge bg-danger text-white ms-1">Belum Dibaca</span>
+                                        @endif
+                                    @endif
                                 </div>
+
                                 @if ($d->sifat_surat || $d->klasifikasi || $d->unit_pengolah)
                                     <div class="small text-muted mt-1">
                                         {{ $d->sifat_surat ? 'Sifat: ' . $d->sifat_surat : '' }}
@@ -196,6 +230,37 @@
                                         {{ $d->unit_pengolah ? ' | Unit: ' . $d->unit_pengolah : '' }}
                                     </div>
                                 @endif
+                            </td>
+
+                            {{-- ✅ Tujuan --}}
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    <div class="recipient-pill">
+                                        <i class="bi bi-person-badge text-success"></i>
+                                        <span class="fw-semibold">{{ $recipientName }}</span>
+                                    </div>
+
+                                    @if($recipientJabatan || $recipientInstansi)
+                                        <div class="mini-muted">
+                                            {{ $recipientJabatan ? $recipientJabatan : '' }}
+                                            {{ ($recipientJabatan && $recipientInstansi) ? ' • ' : '' }}
+                                            {{ $recipientInstansi ? $recipientInstansi : '' }}
+                                        </div>
+                                    @endif
+
+                                    {{-- ✅ admin lihat status baca penerima --}}
+                                    @if($isAdmin)
+                                        @if($rec && $rec->read_at)
+                                            <span class="badge bg-success text-white">
+                                                Dibaca: {{ $rec->read_at->format('d M Y H:i') }}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-danger text-white">
+                                                Belum Dibaca
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
                             </td>
 
                             <td>
@@ -226,11 +291,8 @@
                             <td class="text-center">
                                 @php
                                     $badgeClass = 'bg-success text-white';
-                                    if ($d->status === 'Diproses') {
-                                        $badgeClass = 'bg-warning text-dark';
-                                    } elseif ($d->status === 'Selesai') {
-                                        $badgeClass = 'bg-secondary text-white';
-                                    }
+                                    if ($d->status === 'Diproses') $badgeClass = 'bg-warning text-dark';
+                                    elseif ($d->status === 'Selesai') $badgeClass = 'bg-secondary text-white';
                                 @endphp
 
                                 <span class="badge-status {{ $badgeClass }}">
@@ -248,38 +310,41 @@
                                         <i class="bi bi-eye"></i>
                                     </a>
 
-                                    {{-- DISPOSISI --}}
-                                    <a href="{{ route('surat-masuk.disposisi.form', $d->id) }}"
-                                        class="btn btn-disposisi action-btn" title="Disposisi Surat">
-                                        @if (($d->disposisis_count ?? 0) > 0)
-                                            <i class="bi bi-check2-circle"></i>
-                                        @else
-                                            <i class="bi bi-send"></i>
-                                        @endif
-                                    </a>
+                                    {{-- DISPOSISI (admin saja, kalau pegawai kamu mau sembunyikan) --}}
+                                    @if($isAdmin)
+                                        <a href="{{ route('surat-masuk.disposisi.form', $d->id) }}"
+                                            class="btn btn-disposisi action-btn" title="Disposisi Surat">
+                                            @if (($d->disposisis_count ?? 0) > 0)
+                                                <i class="bi bi-check2-circle"></i>
+                                            @else
+                                                <i class="bi bi-send"></i>
+                                            @endif
+                                        </a>
+                                    @endif
 
-                                    {{-- EDIT --}}
-                                    <a href="{{ route('surat-masuk.edit', $d->id) }}"
-                                        class="btn btn-warning action-btn text-white" title="Edit Data">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
+                                    {{-- EDIT + HAPUS admin saja --}}
+                                    @if($isAdmin)
+                                        <a href="{{ route('surat-masuk.edit', $d->id) }}"
+                                            class="btn btn-warning action-btn text-white" title="Edit Data">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
 
-                                    {{-- HAPUS --}}
-                                    <form action="{{ route('surat-masuk.destroy', $d->id) }}" method="POST"
-                                        onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger action-btn" title="Hapus Data">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                        <form action="{{ route('surat-masuk.destroy', $d->id) }}" method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger action-btn" title="Hapus Data">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
 
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5 text-muted">
+                            <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="bi bi-folder2-open fs-1 d-block mb-3"></i>
                                 Belum ada data surat masuk.
                             </td>

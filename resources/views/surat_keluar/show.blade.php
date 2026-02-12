@@ -6,48 +6,65 @@
             font-weight: 700;
         }
 
-        .info-table td {
-            padding: 8px 0;
-            vertical-align: top;
-        }
-
-        .timeline-item {
-            position: relative;
-            padding-left: 28px;
-            margin-bottom: 18px;
-        }
-
-        .timeline-item:before {
-            content: "";
-            position: absolute;
-            left: 10px;
-            top: 6px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #198754;
-        }
-
-        .timeline-item:after {
-            content: "";
-            position: absolute;
-            left: 14px;
-            top: 18px;
-            width: 2px;
-            height: calc(100% + 10px);
-            background: rgba(25, 135, 84, 0.25);
-        }
-
-        .timeline-item:last-child:after {
-            display: none;
-        }
-
         .badge-status {
             padding: 6px 12px;
-            border-radius: 8px;
+            border-radius: 999px;
             font-weight: 700;
             font-size: 0.72rem;
             display: inline-block;
+            white-space: nowrap;
+        }
+
+        .meta-box {
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 18px;
+            background: #f8f9fa;
+            padding: 16px;
+        }
+
+        .meta-label {
+            font-size: .78rem;
+            color: #6c757d;
+        }
+
+        .meta-value {
+            font-weight: 700;
+            color: #1f2d3d;
+        }
+
+        .info-row td {
+            padding: 8px 0;
+            vertical-align: top;
+            font-size: .95rem;
+        }
+
+        .mini-card {
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 18px;
+            background: #fff;
+            padding: 16px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(0,0,0,0.08);
+            background: #fff;
+            font-size: .85rem;
+            font-weight: 600;
+        }
+
+        .pill .icon {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #f1f3f5;
         }
     </style>
 
@@ -70,6 +87,9 @@
             'Selesai' => 'bg-primary text-white',
             default => 'bg-secondary text-white',
         };
+
+        // ✅ tujuan pegawai dari metadata (dropdown)
+        $tujuanPegawai = $data->tujuanUser ?? null;
     @endphp
 
     <div class="mb-4">
@@ -84,16 +104,18 @@
                 <div class="card-body p-4">
                     <h6 class="fw-bold mb-3">Informasi Surat</h6>
 
-                    <table class="table table-borderless mb-3" style="font-size: 0.95rem;">
-                        <tr>
+                    <table class="table table-borderless mb-3">
+                        <tr class="info-row">
                             <td class="text-muted" style="width: 160px;">Nomor Agenda</td>
                             <td class="fw-semibold">: {{ $data->nomor_agenda ?? '-' }}</td>
                         </tr>
-                        <tr>
+
+                        <tr class="info-row">
                             <td class="text-muted">Nomor Surat</td>
                             <td class="fw-semibold">: {{ $data->nomor_surat ?? '-' }}</td>
                         </tr>
-                        <tr>
+
+                        <tr class="info-row">
                             <td class="text-muted">Tanggal Surat</td>
                             <td class="fw-semibold">:
                                 @if(!empty($data->tanggal_surat))
@@ -103,50 +125,75 @@
                                 @endif
                             </td>
                         </tr>
-                        <tr>
-                            <td class="text-muted">Tujuan</td>
+
+                        {{-- ✅ Tujuan Instansi --}}
+                        <tr class="info-row">
+                            <td class="text-muted">Tujuan Instansi</td>
                             <td class="fw-semibold">: {{ $data->tujuan ?? '-' }}</td>
                         </tr>
-                        <tr>
+
+                        {{-- ✅ Tujuan Pegawai (Metadata) --}}
+                        <tr class="info-row">
+                            <td class="text-muted">Tujuan Pegawai (Metadata)</td>
+                            <td class="fw-semibold">:
+                                @if($tujuanPegawai)
+                                    {{ $tujuanPegawai->name }}
+                                    @if($tujuanPegawai->jabatan || $tujuanPegawai->instansi)
+                                        <div class="text-muted small">
+                                            {{ $tujuanPegawai->jabatan ?? '-' }}
+                                            {{ ($tujuanPegawai->jabatan && $tujuanPegawai->instansi) ? ' • ' : '' }}
+                                            {{ $tujuanPegawai->instansi ?? '' }}
+                                        </div>
+                                    @endif
+                                @else
+                                    -
+                                @endif
+                            </td>
+                        </tr>
+
+                        <tr class="info-row">
                             <td class="text-muted">Perihal</td>
                             <td class="fw-semibold">: {{ $data->perihal ?? '-' }}</td>
                         </tr>
-                        <tr>
+
+                        <tr class="info-row">
                             <td class="text-muted">Status</td>
-                            <td>: <span class="badge rounded-pill {{ $statusClass }}">{{ $status }}</span></td>
+                            <td>:
+                                <span class="badge-status {{ $statusClass }}">{{ $status }}</span>
+                            </td>
                         </tr>
                     </table>
 
                     {{-- METADATA INSTANSI --}}
-                    <div class="border rounded-4 p-3 bg-light">
+                    <div class="meta-box">
                         <div class="fw-bold mb-2">
                             <i class="bi bi-journal-text me-2"></i>Metadata Instansi
                         </div>
 
-                        <div class="row g-2" style="font-size:0.92rem;">
+                        <div class="row g-3">
                             <div class="col-6">
-                                <div class="text-muted small">Sifat Surat</div>
-                                <div class="fw-semibold">{{ $data->sifat_surat ?? '-' }}</div>
+                                <div class="meta-label">Sifat Surat</div>
+                                <div class="meta-value">{{ $data->sifat_surat ?? '-' }}</div>
                             </div>
 
                             <div class="col-6">
-                                <div class="text-muted small">Template Cetak</div>
-                                <div class="fw-semibold">{{ $jenisTemplateLabel }}</div>
+                                <div class="meta-label">Template Cetak</div>
+                                <div class="meta-value">{{ $jenisTemplateLabel }}</div>
                             </div>
 
                             <div class="col-6">
-                                <div class="text-muted small">Jenis Surat (Kategori)</div>
-                                <div class="fw-semibold">{{ $data->kategori_surat ?? '-' }}</div>
+                                <div class="meta-label">Jenis Surat (Kategori)</div>
+                                <div class="meta-value">{{ $data->kategori_surat ?? '-' }}</div>
                             </div>
 
                             <div class="col-6">
-                                <div class="text-muted small">Klasifikasi</div>
-                                <div class="fw-semibold">{{ $data->klasifikasi ?? '-' }}</div>
+                                <div class="meta-label">Klasifikasi</div>
+                                <div class="meta-value">{{ $data->klasifikasi ?? '-' }}</div>
                             </div>
 
                             <div class="col-6">
-                                <div class="text-muted small">Unit Pengolah</div>
-                                <div class="fw-semibold">{{ $data->unit_pengolah ?? '-' }}</div>
+                                <div class="meta-label">Unit Pengolah</div>
+                                <div class="meta-value">{{ $data->unit_pengolah ?? '-' }}</div>
                             </div>
                         </div>
                     </div>
@@ -160,28 +207,20 @@
                             </a>
                         @endif
 
-                        {{-- CETAK TEMPLATE BARU --}}
                         @if (Route::has('surat-keluar.cetak'))
-                            <div class="border rounded-4 p-3">
+                            <div class="mini-card">
                                 <div class="fw-bold mb-2">
                                     <i class="bi bi-printer me-2"></i> Cetak Dokumen
                                 </div>
 
-
-
-
-                                {{-- Cetak sesuai jenis template yang dipilih saat input --}}
-                                <div class="mt-2">
-                                    <a href="{{ route('surat-keluar.cetak', [$data->id, $jenisTemplate]) }}"
-                                       class="btn btn-success w-100 rounded-pill" target="_blank">
-                                        <i class="bi bi-lightning-charge me-2"></i>
-                                        Cetak Sesuai Jenis ({{ $jenisTemplateLabel }})
-                                    </a>
-                                </div>
+                                <a href="{{ route('surat-keluar.cetak', [$data->id, $jenisTemplate]) }}"
+                                   class="btn btn-success w-100 rounded-pill" target="_blank">
+                                    <i class="bi bi-lightning-charge me-2"></i>
+                                    Cetak Sesuai Jenis ({{ $jenisTemplateLabel }})
+                                </a>
                             </div>
                         @endif
 
-                        {{-- BACKUP ROUTE LAMA (opsional) --}}
                         @if (Route::has('surat-keluar.kendali.pdf'))
                             <a href="{{ route('surat-keluar.kendali.pdf', $data->id) }}"
                                class="btn btn-outline-secondary rounded-pill" target="_blank">
@@ -204,18 +243,32 @@
                     <div class="d-flex gap-3">
                         <div style="width:10px;">
                             <div class="rounded-circle bg-success" style="width:12px;height:12px;"></div>
-                            <div class="bg-success" style="width:2px;height:60px;margin:0 auto;"></div>
+                            <div class="bg-success" style="width:2px;height:60px;margin:0 auto; opacity:.25;"></div>
                         </div>
 
                         <div>
                             <div class="fw-bold">Tambah Surat Keluar</div>
                             <div class="text-muted small">
-                                Menambahkan surat keluar | Agenda: {{ $data->nomor_agenda ?? '-' }} | Nomor:
-                                {{ $data->nomor_surat ?? '-' }}
+                                Menambahkan surat keluar | Agenda: {{ $data->nomor_agenda ?? '-' }} | Nomor: {{ $data->nomor_surat ?? '-' }}
                             </div>
                             <div class="text-muted small">{{ $data->created_at?->translatedFormat('d M Y H:i') }}</div>
                         </div>
                     </div>
+
+                    {{-- (opsional) update log sederhana --}}
+                    @if($data->updated_at && $data->updated_at != $data->created_at)
+                        <div class="d-flex gap-3 mt-3">
+                            <div style="width:10px;">
+                                <div class="rounded-circle bg-success" style="width:12px;height:12px;"></div>
+                            </div>
+
+                            <div>
+                                <div class="fw-bold">Update Data</div>
+                                <div class="text-muted small">Perubahan terakhir pada data surat.</div>
+                                <div class="text-muted small">{{ $data->updated_at?->translatedFormat('d M Y H:i') }}</div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 

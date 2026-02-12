@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     // Resource Surat Masuk & Keluar
     Route::resource('surat-masuk', SuratMasukController::class);
     Route::resource('surat-keluar', SuratKeluarController::class);
+    Route::post('/surat-masuk/{surat}/recipients/{recipient}/toggle-read', [SuratMasukController::class, 'toggleReadRecipient'])->name('surat-masuk.recipient.toggle-read');
 
     // Cetak surat keluar (template dinamis)
     Route::get('surat-keluar/{suratKeluar}/cetak/{template}', [SuratKeluarController::class, 'cetak'])->name('surat-keluar.cetak');

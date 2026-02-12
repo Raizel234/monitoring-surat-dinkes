@@ -27,6 +27,7 @@ class SuratMasuk extends Model
         'jenis_surat',
         'klasifikasi',
         'unit_pengolah',
+        'tujuan_user_id'
     ];
 
     // ✅ relasi ke disposisi
@@ -83,5 +84,10 @@ class SuratMasuk extends Model
             12 => 'XII',
         ];
         return $map[(int) $month] ?? 'I';
+    }
+
+    public function recipients()
+    {
+        return $this->hasMany(\App\Models\SuratMasukRecipient::class, 'surat_masuk_id');
     }
 }

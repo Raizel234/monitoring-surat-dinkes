@@ -1,93 +1,98 @@
-<hr class="my-4">
-
-<h6 class="fw-bold mb-3 text-success">
-    <i class="bi bi-building-gear me-2"></i> Metadata Instansi
-</h6>
-
 @php
-    // ✅ aman kalau $pegawai tidak dikirim dari controller
+    // context: 'surat_masuk' atau 'surat_keluar'
+    $context = $context ?? 'surat_masuk';
+
+    // daftar pegawai (wajib dikirim dari controller)
     $pegawai = $pegawai ?? collect();
+
+    // mode edit: optional ada $data
+    $data = $data ?? null;
+
+    // untuk edit surat masuk: kadang kamu kirim $tujuanUserId dari controller
+    $tujuanUserId = $tujuanUserId ?? null;
+
+    // ambil tujuan dari relasi recipients kalau ada dan kalau $data tidak null
+    $recipientUserId = null;
+    if ($data && isset($data->recipients) && $data->recipients && $data->recipients->count() > 0) {
+        $recipientUserId = $data->recipients->first()->user_id;
+    }
+
+    // nilai tujuan pegawai terpilih (old() menang)
+    $selectedTujuanUserId = old(
+        'tujuan_user_id',
+        $tujuanUserId ?? $recipientUserId ?? ($data->tujuan_user_id ?? null)
+    );
+
+    // field metadata lain
+    $sifat   = old('sifat_surat', $data->sifat_surat ?? '');
+    $kategori = old('kategori_surat', $data->kategori_surat ?? '');
+    $unit    = old('unit_pengolah', $data->unit_pengolah ?? '');
+
+    // tujuan klasifikasi teks (opsional, beda dengan tujuan pegawai)
+    $klasifikasiText = old('klasifikasi', $data->klasifikasi ?? '');
 @endphp
 
-<div class="row g-3">
-    <div class="col-md-3">
-        <label class="form-label fw-semibold">Sifat Surat</label>
-        <select name="sifat_surat" class="form-select rounded-3">
-            <option value="">- Pilih -</option>
-            <option value="Biasa" {{ old('sifat_surat', $data->sifat_surat ?? '')=='Biasa' ? 'selected':'' }}>
-                Biasa
-            </option>
-            <option value="Penting" {{ old('sifat_surat', $data->sifat_surat ?? '')=='Penting' ? 'selected':'' }}>
-                Penting
-            </option>
-            <option value="Rahasia" {{ old('sifat_surat', $data->sifat_surat ?? '')=='Rahasia' ? 'selected':'' }}>
-                Rahasia
-            </option>
-        </select>
+<style>
+    .meta-title { font-weight:700; color:#198754; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .meta-help { font-size:0.78rem; color:#6c757d; margin-top:6px; }
+</style>
+
+<div class="mt-5">
+    <div class="meta-title">
+        <i class="bi bi-journal-text"></i> Metadata Instansi
     </div>
 
-    <div class="col-md-3">
-        <label class="form-label fw-semibold">Jenis Surat (Kategori)</label>
-        <input
-            type="text"
-            name="kategori_surat"
-            value="{{ old('kategori_surat', $data->kategori_surat ?? '') }}"
-            class="form-control rounded-3"
-            placeholder="Contoh: Undangan / Permohonan"
-        >
-        <div class="text-muted small mt-1">Ini kategori manual, beda dengan template cetak.</div>
-    </div>
-
-    <div class="col-md-3">
-        <label class="form-label fw-semibold">Tujuan (Klasifikasi)</label>
-
-        {{-- ✅ Input tetap "klasifikasi" biar masuk ke DB surat --}}
-        <input
-            type="text"
-            name="klasifikasi"
-            list="list-pegawai-klasifikasi"
-            value="{{ old('klasifikasi', $data->klasifikasi ?? '') }}"
-            class="form-control rounded-3"
-            placeholder="Ketik manual atau pilih dari daftar pegawai..."
-            autocomplete="off"
-        >
-
-        {{-- ✅ Dropdown otomatis dari pegawai --}}
-        <datalist id="list-pegawai-klasifikasi">
-            @foreach ($pegawai as $p)
-                @php
-                    // Format yang tampil di dropdown (bebas kamu ubah)
-                    // Misal: "Kepala Dinas - drg. Ellya - Dinkes Sumenep"
-                    $jabatan = trim($p->jabatan ?? '');
-                    $nama = trim($p->name ?? '');
-                    $instansi = trim($p->instansi ?? '');
-
-                    $label = $jabatan ?: $nama;
-                    if ($nama && $jabatan) $label = $jabatan . ' - ' . $nama;
-                    if ($instansi) $label .= ' - ' . $instansi;
-                @endphp
-
-                <option value="{{ $label }}"></option>
-            @endforeach
-        </datalist>
-
-        <div class="text-muted small mt-1">
-            Pilih dari daftar pegawai (dibuat admin) atau isi manual.
+    <div class="row g-3">
+        {{-- SIFAT --}}
+        <div class="col-md-3">
+            <label class="form-label small text-muted mb-1">Sifat Surat</label>
+            <select name="sifat_surat" class="form-select rounded-3">
+                <option value="">- Pilih -</option>
+                <option value="Biasa"   {{ $sifat === 'Biasa' ? 'selected' : '' }}>Biasa</option>
+                <option value="Penting" {{ $sifat === 'Penting' ? 'selected' : '' }}>Penting</option>
+                <option value="Rahasia" {{ $sifat === 'Rahasia' ? 'selected' : '' }}>Rahasia</option>
+            </select>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <label class="form-label fw-semibold">Unit Pengolah</label>
-        <input
-            type="text"
-            name="unit_pengolah"
-            value="{{ old('unit_pengolah', $data->unit_pengolah ?? '') }}"
-            class="form-control rounded-3"
-            placeholder="Contoh: Sekretariat / P2P"
-        >
-    </div>
-</div>
+        {{-- KATEGORI --}}
+        <div class="col-md-3">
+            <label class="form-label small text-muted mb-1">Jenis Surat (Kategori)</label>
+            <input type="text" name="kategori_surat" class="form-control rounded-3"
+                   value="{{ $kategori }}" placeholder="Contoh: Undangan / Permohonan">
+            <div class="meta-help">Ini kategori manual, beda dengan template cetak.</div>
+        </div>
 
-<p class="text-muted small mt-2 mb-0">
-    Nomor Agenda dibuat otomatis saat surat disimpan.
-</p>
+        {{-- TUJUAN PEGAWAI --}}
+        <div class="col-md-3">
+            <label class="form-label small text-muted mb-1">
+                {{ $context === 'surat_masuk' ? 'Tujuan Pegawai (Wajib)' : 'Tujuan Pegawai (Metadata)' }}
+            </label>
+
+            <select name="tujuan_user_id" class="form-select rounded-3" {{ $context === 'surat_masuk' ? 'required' : '' }}>
+                <option value="">- Pilih Pegawai -</option>
+
+                @foreach($pegawai as $p)
+                    @php
+                        $label = trim(($p->jabatan ?? '').' - '.($p->name ?? ''));
+                        $extra = trim(($p->instansi ?? ''));
+                        $full = $extra ? $label.' - '.$extra : $label;
+                    @endphp
+                    <option value="{{ $p->id }}" {{ (string)$selectedTujuanUserId === (string)$p->id ? 'selected' : '' }}>
+                        {{ $full }}
+                    </option>
+                @endforeach
+            </select>
+
+            <div class="meta-help">
+                {{ $context === 'surat_masuk'
+                    ? 'Wajib dipilih (dipakai untuk inbox pegawai + status dibaca).'
+                    : 'Opsional (hanya metadata internal).'
+                }}
+            </div>
+
+            {{-- kalau list kosong, kasih warning --}}
+            @if($pegawai->count() === 0)
+                <div class="meta-help text-danger">
+                    *Data pegawai kosong / tidak terkirim ke view. Pastikan controller create/edit mengirim $pegawai.
+                </div>
+            @endif
