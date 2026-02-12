@@ -602,9 +602,9 @@
         ];
 
         $title = $map[$routeName][0] ?? 'Sistem Monitoring Surat';
-        $desc  = $map[$routeName][1] ?? 'Dinas Kesehatan Kabupaten Sumenep';
+        $desc = $map[$routeName][1] ?? 'Dinas Kesehatan Kabupaten Sumenep';
 
-        $openSuratMasuk  = request()->routeIs('surat-masuk.*');
+        $openSuratMasuk = request()->routeIs('surat-masuk.*');
         $openSuratKeluar = request()->routeIs('surat-keluar.*');
 
         $openKontenPublik = request()->routeIs('admin.berita.*') || request()->routeIs('dokumen-publik.*');
@@ -683,12 +683,9 @@
                 <div class="nav-label">Manajemen Surat</div>
 
                 {{-- ✅ Dropdown Surat Masuk --}}
-                <a class="nav-link {{ $openSuratMasuk ? 'active' : '' }}"
-                   data-bs-toggle="collapse"
-                   href="#suratMasukMenu"
-                   role="button"
-                   aria-expanded="{{ $openSuratMasuk ? 'true' : 'false' }}"
-                   aria-controls="suratMasukMenu">
+                <a class="nav-link {{ $openSuratMasuk ? 'active' : '' }}" data-bs-toggle="collapse"
+                    href="#suratMasukMenu" role="button" aria-expanded="{{ $openSuratMasuk ? 'true' : 'false' }}"
+                    aria-controls="suratMasukMenu">
                     <i class="bi bi-envelope-paper-fill"></i>
                     <span class="nav-text">Surat Masuk</span>
                     <i class="bi bi-chevron-down caret"></i>
@@ -696,29 +693,26 @@
                 <div class="collapse {{ $openSuratMasuk ? 'show' : '' }}" id="suratMasukMenu">
                     <div class="nav-collapse">
                         <a href="{{ route('surat-masuk.create') }}"
-                           class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
+                            class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
                             <span class="nav-text">Register Surat Masuk</span>
                         </a>
 
                         <a href="{{ route('surat-masuk.index') }}"
-                           class="nav-sub {{ request()->routeIs('surat-masuk.index') ? 'active' : '' }}">
+                            class="nav-sub {{ request()->routeIs('surat-masuk.index') ? 'active' : '' }}">
                             <i class="bi bi-journal-text"></i>
                             <span class="nav-text">Log Surat Masuk</span>
                         </a>
 
                         {{-- Disposisi butuh id -> arahkan ke log --}}
-                        
+
                     </div>
                 </div>
 
                 {{-- ✅ Dropdown Surat Keluar --}}
-                <a class="nav-link {{ $openSuratKeluar ? 'active' : '' }}"
-                   data-bs-toggle="collapse"
-                   href="#suratKeluarMenu"
-                   role="button"
-                   aria-expanded="{{ $openSuratKeluar ? 'true' : 'false' }}"
-                   aria-controls="suratKeluarMenu">
+                <a class="nav-link {{ $openSuratKeluar ? 'active' : '' }}" data-bs-toggle="collapse"
+                    href="#suratKeluarMenu" role="button" aria-expanded="{{ $openSuratKeluar ? 'true' : 'false' }}"
+                    aria-controls="suratKeluarMenu">
                     <i class="bi bi-send-fill"></i>
                     <span class="nav-text">Surat Keluar</span>
                     <i class="bi bi-chevron-down caret"></i>
@@ -726,13 +720,13 @@
                 <div class="collapse {{ $openSuratKeluar ? 'show' : '' }}" id="suratKeluarMenu">
                     <div class="nav-collapse">
                         <a href="{{ route('surat-keluar.create') }}"
-                           class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
+                            class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
                             <span class="nav-text">Register Surat Keluar</span>
                         </a>
 
                         <a href="{{ route('surat-keluar.index') }}"
-                           class="nav-sub {{ request()->routeIs('surat-keluar.index') ? 'active' : '' }}">
+                            class="nav-sub {{ request()->routeIs('surat-keluar.index') ? 'active' : '' }}">
                             <i class="bi bi-journal-text"></i>
                             <span class="nav-text">Log Surat Keluar</span>
                         </a>
@@ -759,32 +753,40 @@
                 <div class="nav-label">Konten Publik</div>
 
                 {{-- Dropdown Konten Publik --}}
-                <a class="nav-link {{ $openKontenPublik ? 'active' : '' }}"
-                   data-bs-toggle="collapse"
-                   href="#kontenPublikMenu"
-                   role="button"
-                   aria-expanded="{{ $openKontenPublik ? 'true' : 'false' }}"
-                   aria-controls="kontenPublikMenu">
+                <a class="nav-link {{ $openKontenPublik ? 'active' : '' }}" data-bs-toggle="collapse"
+                    href="#kontenPublikMenu" role="button"
+                    aria-expanded="{{ $openKontenPublik ? 'true' : 'false' }}" aria-controls="kontenPublikMenu">
                     <i class="bi bi-megaphone-fill"></i>
                     <span class="nav-text">Berita & Dokumen</span>
                     <i class="bi bi-chevron-down caret"></i>
                 </a>
 
+
                 <div class="collapse {{ $openKontenPublik ? 'show' : '' }}" id="kontenPublikMenu">
                     <div class="nav-collapse">
                         <a href="{{ route('admin.berita.index') }}"
-                           class="nav-sub {{ request()->routeIs('admin.berita.*') ? 'active' : '' }}">
+                            class="nav-sub {{ request()->routeIs('admin.berita.*') ? 'active' : '' }}">
                             <i class="bi bi-newspaper"></i>
                             <span class="nav-text">Kelola Berita</span>
                         </a>
 
-                        
+
                     </div>
                 </div>
 
+                <div class="nav-label">User</div>
+                @if (auth()->user()->role === 'admin')
+                    <li>
+                        <a href="{{ route('admin.users.index') }}"
+                            class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                            <i class="bi bi-people"></i> <span class="nav-text">Data User</span>
+                        </a>
+                    </li>
+                @endif
+
                 <div class="nav-label">Pengaturan</div>
                 <a href="{{ route('profile.edit') }}"
-                   class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <i class="bi bi-person-gear"></i> <span class="nav-text">Profil Saya</span>
                 </a>
             </nav>
@@ -819,7 +821,10 @@
 
     <script>
         // ===== CLOCK REALTIME =====
-        function pad(n) { return n.toString().padStart(2, '0'); }
+        function pad(n) {
+            return n.toString().padStart(2, '0');
+        }
+
         function updateClock() {
             const now = new Date();
             const el = document.getElementById('clockText');
@@ -893,4 +898,5 @@
     </script>
 
 </body>
+
 </html>

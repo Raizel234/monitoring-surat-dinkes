@@ -620,14 +620,10 @@
                             </a>
                         </li>
                     @else
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-outline-light nav-btn" href="{{ route('login') }}">
-                                Masuk
-                            </a>
-                        </li>
+
                         <li class="nav-item">
-                            <a class="btn btn-light nav-btn text-success fw-bold" href="{{ route('register') }}">
-                                Registrasi
+                            <a class="btn btn-light nav-btn text-success fw-bold" href="{{ route('login') }}">
+                                Login
                             </a>
                         </li>
                     @endauth

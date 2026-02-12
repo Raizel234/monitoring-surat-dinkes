@@ -11,7 +11,7 @@ use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\VerifikasiController;
 use App\Http\Controllers\BeritaPublicController;
-
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -72,12 +72,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/disposisi/{id}/status', [DisposisiController::class, 'updateStatus'])->name('disposisi.updateStatus');
 
     // ADMIN BERITA
-    Route::prefix('admin')
+    Route::middleware(['auth', 'admin'])
+        ->prefix('admin')
         ->name('admin.')
         ->group(function () {
             Route::resource('berita', BeritaController::class)
                 ->except(['show'])
                 ->parameters(['berita' => 'berita']);
+            Route::resource('users', AdminUserController::class)->except(['show']);
         });
 });
 

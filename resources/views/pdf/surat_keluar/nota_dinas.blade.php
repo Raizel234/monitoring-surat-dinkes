@@ -141,9 +141,6 @@
             <img src="{{ $qrSvg }}" alt="QR">
           @endif
         </div>
-
-        <div class="small">Scan untuk verifikasi</div>
-
         <div style="font-weight:bold; margin-top:10px;">{{ $surat->nama_ttd ?? '____________________' }}</div>
         <div class="small">
           {{ $surat->pangkat_ttd ?? '' }}

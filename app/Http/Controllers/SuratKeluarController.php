@@ -3,28 +3,43 @@
 namespace App\Http\Controllers;
 
 use App\Models\SuratKeluar;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+
 use BaconQrCode\Writer;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 
-// ✅ Simple QrCode
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
 class SuratKeluarController extends Controller
 {
     public function index()
     {
+        // kalau kamu butuh list pegawai juga di index, boleh kirim.
+        // kalau tidak dipakai, hapus baris $pegawai dan compactnya.
+        $pegawai = User::query()
+            ->where('role', 'pegawai')
+            ->orderBy('jabatan')
+            ->orderBy('name')
+            ->get();
+
         $data = SuratKeluar::latest()->paginate(10);
-        return view('surat_keluar.index', compact('data'));
+
+        return view('surat_keluar.index', compact('data', 'pegawai'));
     }
 
     public function create()
     {
-        return view('surat_keluar.create');
+        // ✅ untuk dropdown tujuan/klasifikasi dari akun pegawai (admin buat akun)
+        $pegawai = User::query()
+            ->where('role', 'pegawai')
+            ->orderBy('jabatan')
+            ->orderBy('name')
+            ->get();
+
+        return view('surat_keluar.create', compact('pegawai'));
     }
 
     public function store(Request $request)
@@ -36,18 +51,23 @@ class SuratKeluarController extends Controller
             'perihal' => 'required|string|max:255',
             'status' => 'nullable|string|max:50',
 
+            // template cetak
             'jenis_surat' => 'required|in:lembar_kendali,nota_dinas,surat_keputusan',
 
+            // metadata instansi
             'sifat_surat' => 'nullable|string|max:100',
-            'klasifikasi' => 'nullable|string|max:100',
-            'unit_pengolah' => 'nullable|string|max:100',
+            'kategori_surat' => 'nullable|string|max:150', // ✅ dari partial kamu
+            'klasifikasi' => 'nullable|string|max:150',
+            'unit_pengolah' => 'nullable|string|max:150',
 
+            // nota dinas
             'yth' => 'nullable|string|max:255',
             'dari' => 'nullable|string|max:255',
             'tembusan' => 'nullable|string',
             'lampiran' => 'nullable|string|max:255',
             'isi' => 'nullable|string',
 
+            // tambahan nota dinas rekomendasi (optional)
             'rujukan_nomor' => 'nullable|string|max:255',
             'rujukan_perihal' => 'nullable|string|max:255',
             'nama_peneliti' => 'nullable|string|max:255',
@@ -55,23 +75,29 @@ class SuratKeluarController extends Controller
             'tentang' => 'nullable|string|max:255',
             'nama_lembaga' => 'nullable|string|max:255',
 
+            // ttd
             'jabatan_ttd' => 'nullable|string|max:255',
             'nama_ttd' => 'nullable|string|max:255',
             'nip_ttd' => 'nullable|string|max:255',
             'pangkat_ttd' => 'nullable|string|max:255',
 
+            // lampiran file
             'file_surat' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
+        // upload file
         if ($request->hasFile('file_surat')) {
             $validated['file_surat'] = $request->file('file_surat')->store('surat_keluar', 'public');
         }
 
+        // nomor agenda otomatis
         $validated['nomor_agenda'] = 'AGK-' . now()->format('YmdHis');
 
         $surat = SuratKeluar::create($validated);
 
-        return redirect()->route('surat-keluar.show', $surat->id)->with('success', 'Surat keluar berhasil disimpan.');
+        return redirect()
+            ->route('surat-keluar.show', $surat->id)
+            ->with('success', 'Surat keluar berhasil disimpan.');
     }
 
     public function show(SuratKeluar $suratKeluar)
@@ -82,8 +108,15 @@ class SuratKeluarController extends Controller
 
     public function edit(SuratKeluar $suratKeluar)
     {
+        $pegawai = User::query()
+            ->where('role', 'pegawai')
+            ->orderBy('jabatan')
+            ->orderBy('name')
+            ->get();
+
         $data = $suratKeluar;
-        return view('surat_keluar.edit', compact('data'));
+
+        return view('surat_keluar.edit', compact('data', 'pegawai'));
     }
 
     public function update(Request $request, SuratKeluar $suratKeluar)
@@ -98,8 +131,9 @@ class SuratKeluarController extends Controller
             'jenis_surat' => 'required|in:lembar_kendali,nota_dinas,surat_keputusan',
 
             'sifat_surat' => 'nullable|string|max:100',
-            'klasifikasi' => 'nullable|string|max:100',
-            'unit_pengolah' => 'nullable|string|max:100',
+            'kategori_surat' => 'nullable|string|max:150',
+            'klasifikasi' => 'nullable|string|max:150',
+            'unit_pengolah' => 'nullable|string|max:150',
 
             'yth' => 'nullable|string|max:255',
             'dari' => 'nullable|string|max:255',
@@ -122,6 +156,7 @@ class SuratKeluarController extends Controller
             'file_surat' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
+        // upload file baru
         if ($request->hasFile('file_surat')) {
             if ($suratKeluar->file_surat) {
                 Storage::disk('public')->delete($suratKeluar->file_surat);
@@ -131,7 +166,9 @@ class SuratKeluarController extends Controller
 
         $suratKeluar->update($validated);
 
-        return redirect()->route('surat-keluar.show', $suratKeluar->id)->with('success', 'Surat keluar berhasil diupdate.');
+        return redirect()
+            ->route('surat-keluar.show', $suratKeluar->id)
+            ->with('success', 'Surat keluar berhasil diupdate.');
     }
 
     public function destroy(SuratKeluar $suratKeluar)
@@ -142,7 +179,9 @@ class SuratKeluarController extends Controller
 
         $suratKeluar->delete();
 
-        return redirect()->route('surat-keluar.index')->with('success', 'Surat keluar dihapus.');
+        return redirect()
+            ->route('surat-keluar.index')
+            ->with('success', 'Surat keluar dihapus.');
     }
 
     public function cetak(SuratKeluar $suratKeluar, string $template)
@@ -157,7 +196,6 @@ class SuratKeluarController extends Controller
             'telp' => '(0328) 662122',
             'email' => 'dkppkbksumenep@gmail.com',
             'kota' => 'Sumenep',
-            // ✅ sesuai lokasi file kamu
             'logo' => public_path('images/avatar/Lambang_Kabupaten_Sumenep.png'),
         ];
 
@@ -170,15 +208,10 @@ class SuratKeluarController extends Controller
         // ✅ URL untuk QR
         $qrUrl = route('verifikasi.surat_keluar', $suratKeluar->id);
 
-        // ✅ QR SVG (TIDAK PERLU IMAGICK / GD)
+        // ✅ QR SVG (tidak perlu imagick/gd)
         $renderer = new ImageRenderer(new RendererStyle(160), new SvgImageBackEnd());
-
         $writer = new Writer($renderer);
-
-        // ini hasilnya string SVG
         $qrSvgString = $writer->writeString($qrUrl);
-
-        // jadikan data-uri untuk <img src="...">
         $qrSvg = 'data:image/svg+xml;base64,' . base64_encode($qrSvgString);
 
         $pdf = Pdf::loadView($viewMap[$template], [
