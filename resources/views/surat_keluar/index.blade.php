@@ -1,21 +1,119 @@
 <x-app-layout>
     <style>
-        .page-title { font-family: 'Playfair Display', serif; color: #0f5132; font-weight: 700; }
-        .table-card { border: none; border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); overflow: hidden; background: white; }
-        .table thead { background-color: #f8f9fa; }
-        .table thead th { border: none; color: #495057; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 15px; }
-        .table tbody td { padding: 15px; vertical-align: middle; color: #444; border-bottom: 1px solid #f1f1f1; }
-        .table tbody tr:hover { background-color: #fcfcfc; transition: 0.2s; }
-        .btn-add { background-color: #198754; border: none; border-radius: 10px; padding: 10px 20px; font-weight: 600; transition: 0.3s; }
-        .btn-add:hover { background-color: #0f5132; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
-        .badge-status { padding: 6px 12px; border-radius: 8px; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; display: inline-block; min-width: 88px; }
-        .action-btn { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; transition: 0.3s; border: none; }
-        .filter-card { border: none; border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); background: #fff; }
-        .meta-pill { font-size: 0.72rem; border-radius: 999px; padding: 4px 10px; border: 1px solid rgba(0,0,0,0.08); background: #fff; color: #666; }
-        .tujuan-box { display:flex; flex-direction:column; gap:6px; }
-        .tujuan-title { font-size:0.7rem; text-transform:uppercase; letter-spacing:.6px; color:#8a8a8a; font-weight:700; }
-        .tujuan-value { font-weight:600; color:#2f2f2f; }
-        .tujuan-sub { font-size:.8rem; color:#6c757d; }
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            color: #0f5132;
+            font-weight: 700;
+        }
+
+        .table-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            background: white;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+        }
+
+        .table thead th {
+            border: none;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 15px;
+        }
+
+        .table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+            color: #444;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .table tbody tr:hover {
+            background-color: #fcfcfc;
+            transition: 0.2s;
+        }
+
+        .btn-add {
+            background-color: #198754;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: #0f5132;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            display: inline-block;
+            min-width: 88px;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .filter-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background: #fff;
+        }
+
+        .meta-pill {
+            font-size: 0.72rem;
+            border-radius: 999px;
+            padding: 4px 10px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background: #fff;
+            color: #666;
+        }
+
+        .tujuan-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .tujuan-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #8a8a8a;
+            font-weight: 700;
+        }
+
+        .tujuan-value {
+            font-weight: 600;
+            color: #2f2f2f;
+        }
+
+        .tujuan-sub {
+            font-size: .8rem;
+            color: #6c757d;
+        }
     </style>
 
     @php
@@ -25,7 +123,8 @@
             'surat_keputusan' => 'SK',
         ];
 
-        function statusBadgeClass($status) {
+        function statusBadgeClass($status)
+        {
             return match ($status) {
                 'Draft' => 'bg-light text-dark border',
                 'Dikirim' => 'bg-warning text-dark',
@@ -42,11 +141,7 @@
             <p class="text-muted small mb-0">Arsip surat keluar. Semua pegawai dapat melihat.</p>
         </div>
 
-        <div class="d-flex gap-2">
-            <a href="{{ route('surat-keluar.create') }}" class="btn btn-success btn-add">
-                <i class="bi bi-plus-circle me-1"></i> Tambah Surat Keluar
-            </a>
-        </div>
+
     </div>
 
     {{-- ✅ Filter --}}
@@ -65,15 +160,19 @@
                         <select name="status" class="form-select rounded-3">
                             <option value="">Semua</option>
                             <option value="Draft" {{ request('status') == 'Draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="Dikirim" {{ request('status') == 'Dikirim' ? 'selected' : '' }}>Dikirim</option>
-                            <option value="Terkirim" {{ request('status') == 'Terkirim' ? 'selected' : '' }}>Terkirim</option>
-                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
+                            <option value="Dikirim" {{ request('status') == 'Dikirim' ? 'selected' : '' }}>Dikirim
+                            </option>
+                            <option value="Terkirim" {{ request('status') == 'Terkirim' ? 'selected' : '' }}>Terkirim
+                            </option>
+                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai
+                            </option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted mb-1">Dari Tanggal</label>
-                        <input type="date" name="from" value="{{ request('from') }}" class="form-control rounded-3">
+                        <input type="date" name="from" value="{{ request('from') }}"
+                            class="form-control rounded-3">
                     </div>
 
                     <div class="col-md-2">
@@ -147,10 +246,20 @@
 
                                 @if ($d->sifat_surat || $d->klasifikasi || $d->unit_pengolah || $d->kategori_surat)
                                     <div class="small text-muted mt-1">
-                                        @if($d->kategori_surat) Jenis: {{ $d->kategori_surat }} @endif
-                                        @if($d->sifat_surat) {{ $d->kategori_surat ? ' | ' : '' }}Sifat: {{ $d->sifat_surat }} @endif
-                                        @if($d->klasifikasi) {{ ($d->kategori_surat || $d->sifat_surat) ? ' | ' : '' }}Klas: {{ $d->klasifikasi }} @endif
-                                        @if($d->unit_pengolah) {{ ($d->kategori_surat || $d->sifat_surat || $d->klasifikasi) ? ' | ' : '' }}Unit: {{ $d->unit_pengolah }} @endif
+                                        @if ($d->kategori_surat)
+                                            Jenis: {{ $d->kategori_surat }}
+                                        @endif
+                                        @if ($d->sifat_surat)
+                                            {{ $d->kategori_surat ? ' | ' : '' }}Sifat: {{ $d->sifat_surat }}
+                                        @endif
+                                        @if ($d->klasifikasi)
+                                            {{ $d->kategori_surat || $d->sifat_surat ? ' | ' : '' }}Klas:
+                                            {{ $d->klasifikasi }}
+                                        @endif
+                                        @if ($d->unit_pengolah)
+                                            {{ $d->kategori_surat || $d->sifat_surat || $d->klasifikasi ? ' | ' : '' }}Unit:
+                                            {{ $d->unit_pengolah }}
+                                        @endif
                                     </div>
                                 @endif
                             </td>
@@ -175,11 +284,11 @@
                                         <div>
                                             <div class="tujuan-title">Tujuan Pegawai (Metadata)</div>
 
-                                            @if($pegawai)
+                                            @if ($pegawai)
                                                 <div class="tujuan-value">{{ $pegawai->name }}</div>
                                                 <div class="tujuan-sub">
                                                     {{ $pegawai->jabatan ?? '-' }}
-                                                    {{ ($pegawai->jabatan && $pegawai->instansi) ? ' • ' : '' }}
+                                                    {{ $pegawai->jabatan && $pegawai->instansi ? ' • ' : '' }}
                                                     {{ $pegawai->instansi ?? '' }}
                                                 </div>
                                             @else
@@ -209,13 +318,20 @@
 
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <a href="{{ route('surat-keluar.edit', $d->id) }}"
-                                       class="btn btn-warning action-btn text-white" title="Edit Surat">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-
+                                    @if (auth()->user()->role === 'admin')
+                                        <a href="{{ route('surat-keluar.edit', $d->id) }}"
+                                            class="btn btn-warning action-btn text-white" title="Edit Surat">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    @endif
+                                    @if (auth()->user()->role === 'pegawai')
+                                        <a href="{{ route('surat-keluar.edit', $d->id) }}"
+                                            class="btn btn-warning action-btn text-white" title="Edit Surat">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    @endif
                                     <a href="{{ route('surat-keluar.show', $d->id) }}"
-                                       class="btn btn-info action-btn text-white" title="Detail">
+                                        class="btn btn-info action-btn text-white" title="Detail">
                                         <i class="bi bi-eye"></i>
                                     </a>
 
@@ -245,7 +361,7 @@
             </table>
         </div>
 
-        @if(method_exists($data, 'links'))
+        @if (method_exists($data, 'links'))
             <div class="p-3">
                 {{ $data->withQueryString()->links() }}
             </div>

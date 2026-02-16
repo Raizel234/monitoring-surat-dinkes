@@ -3,7 +3,7 @@
     $context = $context ?? 'surat_masuk';
 
     // daftar pegawai (wajib dikirim dari controller)
-    $pegawai = $pegawai ?? collect();
+    $atasan = $atasan ?? collect();
 
     // mode edit: optional ada $data
     $data = $data ?? null;
@@ -65,13 +65,13 @@
         {{-- TUJUAN PEGAWAI --}}
         <div class="col-md-3">
             <label class="form-label small text-muted mb-1">
-                {{ $context === 'surat_masuk' ? 'Tujuan Pegawai (Wajib)' : 'Tujuan Pegawai (Metadata)' }}
+                {{ $context === 'surat_masuk' ? 'Tujuan' : 'Tujuan  (Metadata)' }}
             </label>
 
             <select name="tujuan_user_id" class="form-select rounded-3" {{ $context === 'surat_masuk' ? 'required' : '' }}>
-                <option value="">- Pilih Pegawai -</option>
+                <option value="">- Pilih Tujuan -</option>
 
-                @foreach($pegawai as $p)
+                @foreach($atasan as $p)
                     @php
                         $label = trim(($p->jabatan ?? '').' - '.($p->name ?? ''));
                         $extra = trim(($p->instansi ?? ''));
@@ -85,14 +85,14 @@
 
             <div class="meta-help">
                 {{ $context === 'surat_masuk'
-                    ? 'Wajib dipilih (dipakai untuk inbox pegawai + status dibaca).'
+                    ? 'Wajib dipilih (dipakai untuk inbox tujuan + status dibaca).'
                     : 'Opsional (hanya metadata internal).'
                 }}
             </div>
 
             {{-- kalau list kosong, kasih warning --}}
-            @if($pegawai->count() === 0)
+            @if($atasan->count() === 0)
                 <div class="meta-help text-danger">
-                    *Data pegawai kosong / tidak terkirim ke view. Pastikan controller create/edit mengirim $pegawai.
+                    *Data tujuan kosong / tidak terkirim ke view. Pastikan controller create/edit mengirim $tujuan.
                 </div>
             @endif

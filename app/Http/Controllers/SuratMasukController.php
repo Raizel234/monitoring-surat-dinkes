@@ -30,7 +30,7 @@ class SuratMasukController extends Controller
         $query = SuratMasuk::query()->withCount('disposisis');
 
         // ✅ admin lihat semua, pegawai hanya surat miliknya
-        if ($user && ($user->role ?? '') === 'pegawai') {
+        if ($user && ($user->role ?? '') === 'atasan') {
             $query->whereHas('recipients', function ($r) use ($user) {
                 $r->where('user_id', $user->id);
             });
@@ -75,12 +75,12 @@ class SuratMasukController extends Controller
     public function create()
     {
         // ✅ INI YANG DIPAKAI PARTIAL: $pegawai (bukan $pegawaiList)
-        $pegawai = User::where('role', 'pegawai')
+        $atasan = User::where('role', 'atasan')
             ->orderBy('jabatan')
             ->orderBy('name')
             ->get(['id', 'name', 'instansi', 'jabatan']);
 
-        return view('surat_masuk.create', compact('pegawai'));
+        return view('surat_masuk.create', compact('atasan'));
     }
 
     public function store(Request $request)
@@ -155,21 +155,21 @@ class SuratMasukController extends Controller
 
         return redirect()
             ->route('surat-masuk.index')
-            ->with('success', 'Surat berhasil ditambahkan & dikirim ke pegawai tujuan.');
+            ->with('success', 'Surat berhasil ditambahkan & dikirim ke atasan tujuan.');
     }
 
     public function edit($id)
     {
         $data = SuratMasuk::with('recipients')->findOrFail($id);
 
-        $pegawai = User::where('role', 'pegawai')
+        $atasan = User::where('role', 'atasan')
             ->orderBy('jabatan')
             ->orderBy('name')
             ->get(['id', 'name', 'instansi', 'jabatan']);
 
         $tujuanUserId = $data->recipients()->value('user_id');
 
-        return view('surat_masuk.edit', compact('data', 'pegawai', 'tujuanUserId'));
+        return view('surat_masuk.edit', compact('data', 'atasan', 'tujuanUserId'));
     }
 
     public function update(Request $request, $id)
@@ -233,7 +233,7 @@ class SuratMasukController extends Controller
         $data = SuratMasuk::with(['disposisis', 'recipients.user'])->findOrFail($id);
 
         // auto tandai dibaca jika pegawai buka detail suratnya
-        if ($user && ($user->role ?? '') === 'pegawai') {
+        if ($user && ($user->role ?? '') === 'atasan') {
             SuratMasukRecipient::where('surat_masuk_id', $data->id)
                 ->where('user_id', $user->id)
                 ->whereNull('read_at')

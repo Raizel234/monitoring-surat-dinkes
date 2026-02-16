@@ -52,7 +52,7 @@ class SuratKeluarController extends Controller
 
     public function create()
     {
-        $pegawai = User::where('role', 'pegawai')
+        $atasan = User::where('role', 'atasan')
             ->orderBy('jabatan')
             ->orderBy('name')
             ->get(['id', 'name', 'instansi', 'jabatan']);
@@ -60,7 +60,7 @@ class SuratKeluarController extends Controller
         // dipakai partial metadata untuk menentukan mode
         $modeMetadata = 'keluar';
 
-        return view('surat_keluar.create', compact('pegawai', 'modeMetadata'));
+        return view('surat_keluar.create', compact('atasan', 'modeMetadata'));
     }
 
     public function store(Request $request)
@@ -80,7 +80,7 @@ class SuratKeluarController extends Controller
             'klasifikasi' => 'nullable|string|max:100',
             'unit_pengolah' => 'nullable|string|max:100',
 
-            // ✅ tujuan pegawai metadata (dropdown)
+            // ✅ tujuan atasan metadata (dropdown)
             'tujuan_user_id' => 'nullable|exists:users,id',
 
             // nota dinas / dll
@@ -127,14 +127,14 @@ class SuratKeluarController extends Controller
     {
         $data = $suratKeluar;
 
-        $pegawai = User::where('role', 'pegawai')
+        $atasan = User::where('role', 'atasan')
             ->orderBy('jabatan')
             ->orderBy('name')
             ->get(['id', 'name', 'instansi', 'jabatan']);
 
         $modeMetadata = 'keluar';
 
-        return view('surat_keluar.edit', compact('data', 'pegawai', 'modeMetadata'));
+        return view('surat_keluar.edit', compact('data', 'atasan', 'modeMetadata'));
     }
 
     public function update(Request $request, SuratKeluar $suratKeluar)

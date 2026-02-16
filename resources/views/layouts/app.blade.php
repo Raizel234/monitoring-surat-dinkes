@@ -692,12 +692,20 @@
                 </a>
                 <div class="collapse {{ $openSuratMasuk ? 'show' : '' }}" id="suratMasukMenu">
                     <div class="nav-collapse">
+                         @if (auth()->user()->role === 'admin')
                         <a href="{{ route('surat-masuk.create') }}"
                             class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
                             <span class="nav-text">Register Surat Masuk</span>
                         </a>
-
+                        @endif
+                         @if (auth()->user()->role === 'pegawai')
+                        <a href="{{ route('surat-masuk.create') }}"
+                            class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
+                            <i class="bi bi-plus-circle"></i>
+                            <span class="nav-text">Register Surat Masuk</span>
+                        </a>
+                        @endif
                         <a href="{{ route('surat-masuk.index') }}"
                             class="nav-sub {{ request()->routeIs('surat-masuk.index') ? 'active' : '' }}">
                             <i class="bi bi-journal-text"></i>
@@ -719,12 +727,20 @@
                 </a>
                 <div class="collapse {{ $openSuratKeluar ? 'show' : '' }}" id="suratKeluarMenu">
                     <div class="nav-collapse">
+                        @if (auth()->user()->role === 'admin')
                         <a href="{{ route('surat-keluar.create') }}"
                             class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
                             <span class="nav-text">Register Surat Keluar</span>
                         </a>
-
+                        @endif
+                        @if (auth()->user()->role === 'pegawai')
+                        <a href="{{ route('surat-keluar.create') }}"
+                            class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
+                            <i class="bi bi-plus-circle"></i>
+                            <span class="nav-text">Register Surat Keluar</span>
+                        </a>
+                        @endif
                         <a href="{{ route('surat-keluar.index') }}"
                             class="nav-sub {{ request()->routeIs('surat-keluar.index') ? 'active' : '' }}">
                             <i class="bi bi-journal-text"></i>
@@ -750,6 +766,7 @@
                 </a>
 
                 {{-- ✅ KONTEN PUBLIK (Berita + Dokumen) --}}
+                @if (auth()->user()->role === 'admin')
                 <div class="nav-label">Konten Publik</div>
 
                 {{-- Dropdown Konten Publik --}}
@@ -773,9 +790,10 @@
 
                     </div>
                 </div>
+                 @endif
 
-                <div class="nav-label">User</div>
                 @if (auth()->user()->role === 'admin')
+                <div class="nav-label">User</div>
                     <li>
                         <a href="{{ route('admin.users.index') }}"
                             class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">

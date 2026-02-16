@@ -398,7 +398,7 @@
                         <div class="mt-5">
                             @include('partials.metadata_instansi', [
                                 'context' => 'keluar',
-                                'pegawai' => $pegawai,
+                                'atasan' => $atasan,
                             ])
                         </div>
 

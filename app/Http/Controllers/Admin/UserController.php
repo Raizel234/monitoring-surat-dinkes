@@ -38,7 +38,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => ['required', Rule::in(['admin', 'pegawai'])],
+            'role' => ['required', Rule::in(['admin', 'pegawai','atasan'])],
             'instansi' => 'nullable|string|max:255',
             'jabatan' => 'nullable|string|max:255',
         ]);
@@ -59,7 +59,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => ['required','email','max:255', Rule::unique('users','email')->ignore($user->id)],
             'password' => 'nullable|string|min:6',
-            'role' => ['required', Rule::in(['admin', 'pegawai'])],
+            'role' => ['required', Rule::in(['admin', 'pegawai','atasan'])],
             'instansi' => 'nullable|string|max:255',
             'jabatan' => 'nullable|string|max:255',
         ]);

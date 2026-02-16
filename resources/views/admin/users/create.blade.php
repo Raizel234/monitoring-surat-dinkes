@@ -34,6 +34,7 @@
                             <label class="form-label">Role</label>
                             <select name="role" class="form-select" required>
                                 <option value="pegawai" {{ old('role')=='pegawai'?'selected':'' }}>Pegawai</option>
+                                <option value="atasan" {{ old('role')=='atasan'?'selected':'' }}>Atasan</option>
                                 <option value="admin" {{ old('role')=='admin'?'selected':'' }}>Admin</option>
                             </select>
                         </div>

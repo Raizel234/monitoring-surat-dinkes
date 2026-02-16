@@ -311,7 +311,17 @@
                                     </a>
 
                                     {{-- DISPOSISI (admin saja, kalau pegawai kamu mau sembunyikan) --}}
-                                    @if($isAdmin)
+                                    @if (auth()->user()->role === 'atasan')
+                                        <a href="{{ route('surat-masuk.disposisi.form', $d->id) }}"
+                                            class="btn btn-disposisi action-btn" title="Disposisi Surat">
+                                            @if (($d->disposisis_count ?? 0) > 0)
+                                                <i class="bi bi-check2-circle"></i>
+                                            @else
+                                                <i class="bi bi-send"></i>
+                                            @endif
+                                        </a>
+                                    @endif
+                                     @if (auth()->user()->role === 'admin')
                                         <a href="{{ route('surat-masuk.disposisi.form', $d->id) }}"
                                             class="btn btn-disposisi action-btn" title="Disposisi Surat">
                                             @if (($d->disposisis_count ?? 0) > 0)
@@ -323,7 +333,22 @@
                                     @endif
 
                                     {{-- EDIT + HAPUS admin saja --}}
-                                    @if($isAdmin)
+                                    @if (auth()->user()->role === 'admin')
+                                        <a href="{{ route('surat-masuk.edit', $d->id) }}"
+                                            class="btn btn-warning action-btn text-white" title="Edit Data">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <form action="{{ route('surat-masuk.destroy', $d->id) }}" method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger action-btn" title="Hapus Data">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if (auth()->user()->role === 'pegawai')
                                         <a href="{{ route('surat-masuk.edit', $d->id) }}"
                                             class="btn btn-warning action-btn text-white" title="Edit Data">
                                             <i class="bi bi-pencil-square"></i>
