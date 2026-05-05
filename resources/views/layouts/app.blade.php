@@ -659,17 +659,11 @@
                 <div class="user-avatar">{{ substr(Auth::user()->name, 0, 1) }}</div>
                 <div class="ms-3 overflow-hidden">
                     <h6 class="mb-0 fw-bold text-truncate">{{ Auth::user()->name }}</h6>
-                    <small class="opacity-75" style="font-size: 0.75rem;">Pegawai Aktif</small>
+
                 </div>
             </div>
 
-            <button type="button" class="theme-toggle" id="themeToggle">
-                <div class="left">
-                    <i class="bi bi-moon-stars-fill"></i>
-                    <span>Dark Mode</span>
-                </div>
-                <i class="bi bi-toggle-off fs-4" id="themeToggleIcon"></i>
-            </button>
+
 
             <div class="menu-divider"></div>
 

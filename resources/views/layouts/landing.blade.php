@@ -1,23 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
-    <meta charset="utf-8">
-    <link rel="icon" type="image/x-icon" href="/images/avatar/Lambang_Kabupaten_Sumenep.png">
-    <title>Sistem Monitoring Surat | Dinkes Sumenep</title>
+    <meta charset="UTF-8">
+    <title>Dinkes Sumenep</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-    {{-- Fonts --}}
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
-        rel="stylesheet">
-
-    {{-- AOS --}}
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <style>
         :root {
@@ -556,6 +546,7 @@
 
 <body>
 
+
     {{-- TOPBAR --}}
     <div class="topbar py-2">
         <div class="container">
@@ -608,14 +599,32 @@
                 <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
                     <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             Profil
                         </a>
+
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('profil.visimisi') }}">Visi & Misi</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profil.struktur') }}">Struktur</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profil.galeri') }}">Galeri</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profil.sosmed') }}">Sosial Media</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('profil.visimisi') }}">
+                                    Visi & Misi
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('profil.struktur') }}">
+                                    Struktur
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('profil.galeri') }}">
+                                    Galeri
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('profil.sosmed') }}">
+                                    Sosial Media
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('layanan.layanan') }}">Layanan</a></li>
@@ -662,271 +671,8 @@
         </div>
     </div>
 
-    {{-- HERO --}}
-    <section class="hero">
-        <div class="container hero-inner">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-7 text-center text-lg-start" data-aos="fade-right">
-                    <div class="d-inline-flex align-items-center gap-2 badge-gov mb-3">
-                        <i class="bi bi-shield-lock-fill"></i>
-                        <span>E-GOVERNMENT • SUMENEP</span>
-                    </div>
-
-                    <h1 class="hero-title fw-bold mb-3">
-                        Sistem Monitoring<br>
-                        <span class="text-warning">Administrasi Surat</span>
-                    </h1>
-
-                    <p class="hero-lead fs-5 mb-4">
-                        Platform resmi internal untuk pencatatan, pemantauan, dan pengarsipan surat masuk & surat keluar
-                        Dinas Kesehatan Kabupaten Sumenep — cepat, terstruktur, dan audit-ready.
-                    </p>
-
-                    <div class="hero-cta d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
-                        <a href="{{ route('login') }}" class="btn btn-light text-success shadow-lg">
-                            Masuk Sistem <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
-                        <a href="#layanan" class="btn btn-outline-light">
-                            Lihat Layanan
-                        </a>
-                    </div>
-
-                    <div class="mt-4 d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start small"
-                        style="color: rgba(255,255,255,.82);">
-                        <span><i class="bi bi-check2-circle me-1 text-warning"></i> Arsip Digital</span>
-                        <span><i class="bi bi-check2-circle me-1 text-warning"></i> Monitoring Status</span>
-                        <span><i class="bi bi-check2-circle me-1 text-warning"></i> Cetak Dokumen</span>
-                    </div>
-                </div>
-
-                <div class="col-lg-5 d-none d-lg-flex justify-content-center" data-aos="zoom-in">
-                    <img src="/images/avatar/Lambang_Kabupaten_Sumenep.png" class="hero-emblem" alt="Lambang">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- FEATURE HIGHLIGHT --}}
-    <div class="container" style="margin-top:-70px; position:relative; z-index: 5;">
-        <div class="row g-4">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="custom-card p-4 h-100 shadow-sm">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="feature-icon" style="background: rgba(255,193,7,.20); color:#b45309;">
-                            <i class="bi bi-lightning-charge-fill"></i>
-                        </div>
-                        <h5 class="fw-bold mb-0">Efisiensi Waktu</h5>
-                    </div>
-                    <p class="text-muted mb-0">
-                        Proses pencatatan, disposisi, dan cetak laporan lebih cepat, mengurangi kerja manual.
-                    </p>
-                </div>
-            </div>
-
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="custom-card p-4 h-100 shadow-sm">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="feature-icon">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <h5 class="fw-bold mb-0">Standar Administrasi</h5>
-                    </div>
-                    <p class="text-muted mb-0">
-                        Format data dan dokumen dibuat rapi agar sesuai kebutuhan arsip dan administrasi instansi.
-                    </p>
-                </div>
-            </div>
-
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="custom-card p-4 h-100 shadow-sm">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="feature-icon" style="background: rgba(59,130,246,.12); color:#1d4ed8;">
-                            <i class="bi bi-graph-up-arrow"></i>
-                        </div>
-                        <h5 class="fw-bold mb-0">Transparansi Status</h5>
-                    </div>
-                    <p class="text-muted mb-0">
-                        Pantau status surat masuk/keluar, riwayat tindakan, serta akses cetak lembar kendali.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    {{-- =========================
-       SECTION BERITA & KEGIATAN (SLIDER GESER KANAN/KIRI)
-    ========================== --}}
-    @php
-        $beritas = \App\Models\Berita::where('is_publish', 1)->latest()->take(10)->get();
-    @endphp
-
-    <section class="section-padding bg-white" id="berita">
-        <div class="container">
-            <div class="row align-items-end mb-4">
-                <div class="col-lg-7" data-aos="fade-up">
-                    <h2 class="section-title fw-bold mb-2">
-                        Berita & <span class="text-success title-accent">Kegiatan</span>
-                    </h2>
-                    <p class="text-muted mb-0">
-                        Informasi resmi dan kegiatan terbaru Dinas Kesehatan Kabupaten Sumenep.
-                    </p>
-                </div>
-                <div class="col-lg-5 text-lg-end" data-aos="fade-up" data-aos-delay="120">
-                    <span class="service-badge">
-                        <i class="bi bi-newspaper"></i> Informasi Resmi Instansi
-                    </span>
-                </div>
-            </div>
-
-            @if ($beritas->count())
-                <div class="news-slider">
-                    <button type="button" class="news-nav-btn prev" id="newsPrev" aria-label="Sebelumnya">
-                        <i class="bi bi-chevron-left"></i>
-                    </button>
-                    <button type="button" class="news-nav-btn next" id="newsNext" aria-label="Berikutnya">
-                        <i class="bi bi-chevron-right"></i>
-                    </button>
-
-                    <div class="news-slider-pad">
-                        <div class="news-track" id="newsTrack">
-                            @foreach ($beritas as $b)
-                                <div class="news-item" data-aos="fade-up">
-                                    <div class="custom-card h-100 shadow-sm overflow-hidden">
-                                        <div style="height:200px; overflow:hidden;">
-                                            @if ($b->gambar)
-                                                <img src="{{ asset('storage/' . $b->gambar) }}"
-                                                    alt="{{ $b->judul }}"
-                                                    style="width:100%; height:100%; object-fit:cover;">
-                                            @else
-                                                <div
-                                                    class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
-                                                    <i class="bi bi-image fs-1"></i>
-                                                </div>
-                                            @endif
-                                        </div>
-
-                                        <div class="p-4">
-                                            <span class="badge bg-success-subtle text-success mb-2">
-                                                {{ $b->kategori ?? 'Berita' }}
-                                            </span>
-
-                                            <h5 class="fw-bold mb-2">{{ $b->judul }}</h5>
-
-                                            <p class="text-muted small mb-3">
-                                                {{ \Illuminate\Support\Str::limit(strip_tags($b->ringkasan ?? $b->konten), 120) }}
-                                            </p>
-
-                                            <a href="{{ route('berita.public.show', $b->slug) }}"
-                                                class="fw-bold text-success">
-                                                Baca Selengkapnya <i class="bi bi-arrow-right"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        <div class="small text-muted mt-2">
-                            <i class="bi bi-mouse2-fill me-1"></i>
-                            Geser ke kanan/kiri (scroll) atau pakai tombol panah.
-                        </div>
-                    </div>
-                </div>
-            @else
-                <div class="col-12 text-center text-muted py-5">
-                    <i class="bi bi-info-circle fs-1 d-block mb-2"></i>
-                    Belum ada berita dipublikasikan.
-                </div>
-            @endif
-        </div>
-    </section>
-
-    {{-- STATS --}}
-    @php
-        $totalMasuk = \App\Models\SuratMasuk::count();
-        $totalKeluar = \App\Models\SuratKeluar::count();
-        $totalUnit = 38;
-        $jamLayanan = 24;
-    @endphp
-
-    <section class="section-padding pt-0">
-        <div class="container">
-            <div class="stat-box p-5 shadow-lg" data-aos="zoom-in">
-                <div class="row g-4 align-items-center">
-                    <div class="col-lg-5">
-                        <h3 class="fw-bold mb-2">Ringkasan Sistem</h3>
-                        <p class="mb-0" style="color: rgba(255,255,255,.86);">
-                            Statistik real-time dari database surat masuk & surat keluar.
-                        </p>
-                    </div>
-
-                    <div class="col-lg-7">
-                        <div class="row g-3">
-                            <div class="col-6 col-md-3">
-                                <div class="custom-card p-3 text-center"
-                                    style="background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.14);">
-                                    <div class="stat-num counter" data-target="{{ $totalMasuk }}">0</div>
-                                    <div class="stat-label small">Surat Masuk</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="custom-card p-3 text-center"
-                                    style="background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.14);">
-                                    <div class="stat-num counter" data-target="{{ $totalKeluar }}">0</div>
-                                    <div class="stat-label small">Surat Keluar</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="custom-card p-3 text-center"
-                                    style="background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.14);">
-                                    <div class="stat-num counter" data-target="{{ $totalUnit }}">0</div>
-                                    <div class="stat-label small">Unit</div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="custom-card p-3 text-center"
-                                    style="background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.14);">
-                                    <div class="stat-num counter" data-target="{{ $jamLayanan }}">0</div>
-                                    <div class="stat-label small">Jam Layanan</div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
-    {{-- CTA --}}
-    <section class="section-padding pt-0">
-        <div class="container">
-            <div class="custom-card p-5 shadow-lg"
-                style="background: linear-gradient(135deg, rgba(255,193,7,.22), rgba(25,135,84,.10));"
-                data-aos="zoom-in">
-                <div class="row g-4 align-items-center">
-                    <div class="col-lg-8">
-                        <h3 class="fw-bold mb-2">Siap Menggunakan Sistem?</h3>
-                        <p class="text-muted mb-0">
-                            Masuk ke sistem untuk mulai mengelola surat masuk/keluar, cetak laporan, dan arsip instansi.
-                        </p>
-                    </div>
-                    <div class="col-lg-4 text-lg-end">
-                        <a href="{{ route('login') }}"
-                            class="btn btn-success btn-lg rounded-pill fw-bold px-4 py-3 shadow">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Masuk Sistem
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
+    {{-- ================= CONTENT ================= --}}
+    @yield('content')
 
     {{-- FOOTER --}}
     <footer class="text-white">
@@ -985,6 +731,9 @@
         </div>
     </footer>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     {{-- Back to top --}}
     <button class="to-top" id="toTop" aria-label="Kembali ke atas">
         <i class="bi bi-arrow-up-short fs-3"></i>
@@ -1106,6 +855,7 @@
             });
         })();
     </script>
+
 
 </body>
 
