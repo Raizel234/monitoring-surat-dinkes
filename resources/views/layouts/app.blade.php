@@ -669,7 +669,7 @@
 
             <nav class="nav flex-column">
                 <div class="nav-label">Main Menu</div>
-                <a href="{{ route('dashboard') }}"
+                <a href="{{ route('dashboard', [], false) }}"
                     class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-grid-1x2-fill"></i> <span class="nav-text">Dashboard</span>
                 </a>
@@ -687,20 +687,20 @@
                 <div class="collapse {{ $openSuratMasuk ? 'show' : '' }}" id="suratMasukMenu">
                     <div class="nav-collapse">
                          @if (auth()->user()->role === 'admin')
-                        <a href="{{ route('surat-masuk.create') }}"
+                        <a href="{{ route('surat-masuk.create', [], false) }}"
                             class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
                             <span class="nav-text">Register Surat Masuk</span>
                         </a>
                         @endif
                          @if (auth()->user()->role === 'pegawai')
-                        <a href="{{ route('surat-masuk.create') }}"
+                        <a href="{{ route('surat-masuk.create', [], false) }}"
                             class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
                             <span class="nav-text">Register Surat Masuk</span>
                         </a>
                         @endif
-                        <a href="{{ route('surat-masuk.index') }}"
+                        <a href="{{ route('surat-masuk.index', [], false) }}"
                             class="nav-sub {{ request()->routeIs('surat-masuk.index') ? 'active' : '' }}">
                             <i class="bi bi-journal-text"></i>
                             <span class="nav-text">Log Surat Masuk</span>
@@ -722,20 +722,20 @@
                 <div class="collapse {{ $openSuratKeluar ? 'show' : '' }}" id="suratKeluarMenu">
                     <div class="nav-collapse">
                         @if (auth()->user()->role === 'admin')
-                        <a href="{{ route('surat-keluar.create') }}"
+                        <a href="{{ route('surat-keluar.create', [], false) }}"
                             class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
                             <span class="nav-text">Register Surat Keluar</span>
                         </a>
                         @endif
                         @if (auth()->user()->role === 'pegawai')
-                        <a href="{{ route('surat-keluar.create') }}"
+                        <a href="{{ route('surat-keluar.create', [], false) }}"
                             class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
                             <span class="nav-text">Register Surat Keluar</span>
                         </a>
                         @endif
-                        <a href="{{ route('surat-keluar.index') }}"
+                        <a href="{{ route('surat-keluar.index', [], false)}}"
                             class="nav-sub {{ request()->routeIs('surat-keluar.index') ? 'active' : '' }}">
                             <i class="bi bi-journal-text"></i>
                             <span class="nav-text">Log Surat Keluar</span>
@@ -744,17 +744,17 @@
                 </div>
 
                 <div class="nav-label">Laporan</div>
-                <a href="{{ route('laporan.surat_masuk') }}"
+                <a href="{{ route('laporan.surat_masuk', [], false) }}"
                     class="nav-link {{ request()->routeIs('laporan.surat_masuk*') ? 'active' : '' }}">
                     <i class="bi bi-clipboard-data-fill"></i> <span class="nav-text">Laporan Surat Masuk</span>
                 </a>
-                <a href="{{ route('laporan.surat_keluar') }}"
+                <a href="{{ route('laporan.surat_keluar', [], false) }}"
                     class="nav-link {{ request()->routeIs('laporan.surat_keluar*') ? 'active' : '' }}">
                     <i class="bi bi-clipboard-check-fill"></i> <span class="nav-text">Laporan Surat Keluar</span>
                 </a>
 
                 <div class="nav-label">Log Activity</div>
-                <a href="{{ route('activity-logs.index') }}"
+                <a href="{{ route('activity-logs.index', [], false) }}"
                     class="nav-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
                     <i class="bi bi-clock-history"></i> <span class="nav-text">Log Aktivitas</span>
                 </a>
@@ -775,7 +775,7 @@
 
                 <div class="collapse {{ $openKontenPublik ? 'show' : '' }}" id="kontenPublikMenu">
                     <div class="nav-collapse">
-                        <a href="{{ route('admin.berita.index') }}"
+                        <a href="{{ route('admin.berita.index', [], false) }}"
                             class="nav-sub {{ request()->routeIs('admin.berita.*') ? 'active' : '' }}">
                             <i class="bi bi-newspaper"></i>
                             <span class="nav-text">Kelola Berita</span>
@@ -789,7 +789,7 @@
                 @if (auth()->user()->role === 'admin')
                 <div class="nav-label">User</div>
                     <li>
-                        <a href="{{ route('admin.users.index') }}"
+                        <a href="{{ route('admin.users.index', [], false) }}"
                             class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                             <i class="bi bi-people"></i> <span class="nav-text">Data User</span>
                         </a>
@@ -797,7 +797,7 @@
                 @endif
 
                 <div class="nav-label">Pengaturan</div>
-                <a href="{{ route('profile.edit') }}"
+                <a href="{{ route('profile.edit', [], false) }}"
                     class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <i class="bi bi-person-gear"></i> <span class="nav-text">Profil Saya</span>
                 </a>
@@ -805,7 +805,7 @@
         </div>
 
         <div class="mt-auto">
-            <form method="POST" action="{{ route('logout') }}">
+            <form method="POST" action="{{ route('logout', [], false) }}">
                 @csrf
                 <button type="submit" class="btn btn-logout">
                     <i class="bi bi-power"></i> <span class="nav-text">Keluar Sistem</span>

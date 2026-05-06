@@ -99,11 +99,7 @@
         </div>
 
         {{-- (Opsional) tombol tambah surat hanya admin --}}
-        @if($isAdmin)
-            <a href="{{ route('surat-masuk.create') }}" class="btn btn-success rounded-pill px-4">
-                <i class="bi bi-plus-circle me-1"></i> Tambah Surat Masuk
-            </a>
-        @endif
+       
     </div>
 
     {{-- ✅ FILTER & SEARCH --}}

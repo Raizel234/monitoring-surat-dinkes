@@ -624,15 +624,16 @@
 
                     @auth
                         <li class="nav-item ms-lg-2">
-                            <a class="btn btn-warning nav-btn shadow-sm" href="{{ route('dashboard') }}">
+                            <a class="btn btn-warning nav-btn shadow-sm" href="{{ route('dashboard', [], false) }}">
                                 <i class="bi bi-grid-fill me-2"></i>Dashboard
                             </a>
                         </li>
                     @else
                         <li class="nav-item">
-                            <a class="btn btn-light nav-btn text-success fw-bold" href="{{ route('login') }}">
+                            <a class="btn btn-light nav-btn text-success fw-bold" href="{{ route('login', [], false) }}">
                                 Login
                             </a>
+                            
                         </li>
                     @endauth
                 </ul>
@@ -683,7 +684,7 @@
                     </p>
 
                     <div class="hero-cta d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
-                        <a href="{{ route('login') }}" class="btn btn-light text-success shadow-lg">
+                        <a href="{{ route('login', [], false)}}" class="btn btn-light text-success shadow-lg">
                             Masuk Sistem <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                         <a href="#layanan" class="btn btn-outline-light">
@@ -916,7 +917,7 @@
                         </p>
                     </div>
                     <div class="col-lg-4 text-lg-end">
-                        <a href="{{ route('login') }}"
+                        <a href="{{ route('login', [], false) }}"
                             class="btn btn-success btn-lg rounded-pill fw-bold px-4 py-3 shadow">
                             <i class="bi bi-box-arrow-in-right me-2"></i>Masuk Sistem
                         </a>
