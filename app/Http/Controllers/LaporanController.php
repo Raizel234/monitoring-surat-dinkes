@@ -14,7 +14,11 @@ class LaporanController extends Controller
     // =========================
     public function suratMasuk(Request $request)
     {
-        $data = $this->suratMasukQuery($request)->get();
+        $request->validate([
+            'from' => 'nullable|date',
+            'to' => 'nullable|date|after_or_equal:from',
+        ]);
+        $data = $this->suratMasukQuery($request)->paginate(50)->withQueryString();
         return view('laporan.surat_masuk', compact('data'));
     }
 
@@ -23,7 +27,11 @@ class LaporanController extends Controller
     // =========================
     public function suratKeluar(Request $request)
     {
-        $data = $this->suratKeluarQuery($request)->get();
+        $request->validate([
+            'from' => 'nullable|date',
+            'to' => 'nullable|date|after_or_equal:from',
+        ]);
+        $data = $this->suratKeluarQuery($request)->paginate(50)->withQueryString();
         return view('laporan.surat_keluar', compact('data'));
     }
 
@@ -46,6 +54,11 @@ class LaporanController extends Controller
 
         $verifBaseUrl = url('/verifikasi/surat-masuk');
 
+        $qrMap = [];
+        foreach ($data as $d) {
+            $qrMap[$d->id] = 'https://chart.googleapis.com/chart?chs=140x140&cht=qr&chld=L|0&chl=' . urlencode($verifBaseUrl . '/' . ($d->qr_token ?? $d->id));
+        }
+
         $pdf = Pdf::loadView('laporan.pdf_surat_masuk', [
             'data'          => $data,
             'filters'       => $filters,
@@ -53,6 +66,7 @@ class LaporanController extends Controller
             'ttd'           => $ttd,
             'tanggalCetak'  => now()->translatedFormat('d F Y'),
             'verifBaseUrl'  => $verifBaseUrl,
+            'qrMap'         => $qrMap,
         ])->setPaper('A4', 'portrait');
 
         return $pdf->download('laporan-surat-masuk.pdf');
@@ -77,6 +91,11 @@ class LaporanController extends Controller
 
         $verifBaseUrl = url('/verifikasi/surat-keluar');
 
+        $qrMap = [];
+        foreach ($data as $d) {
+            $qrMap[$d->id] = 'https://chart.googleapis.com/chart?chs=140x140&cht=qr&chld=L|0&chl=' . urlencode($verifBaseUrl . '/' . ($d->qr_token ?? $d->id));
+        }
+
         $pdf = Pdf::loadView('laporan.pdf_surat_keluar', [
             'data'          => $data,
             'filters'       => $filters,
@@ -84,6 +103,7 @@ class LaporanController extends Controller
             'ttd'           => $ttd,
             'tanggalCetak'  => now()->translatedFormat('d F Y'),
             'verifBaseUrl'  => $verifBaseUrl,
+            'qrMap'         => $qrMap,
         ])->setPaper('A4', 'portrait');
 
         return $pdf->download('laporan-surat-keluar.pdf');

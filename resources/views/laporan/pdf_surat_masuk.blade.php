@@ -190,14 +190,6 @@
         </thead>
         <tbody>
             @forelse($data as $i => $d)
-                @php
-                    $verifUrl = isset($verifBaseUrl) ? $verifBaseUrl . '/' . $d->id : null;
-
-                    // ✅ QR pakai Google Chart API (PNG), aman tanpa imagick
-                    $qrUrl = $verifUrl
-                        ? 'https://chart.googleapis.com/chart?chs=140x140&cht=qr&chld=L|0&chl=' . urlencode($verifUrl)
-                        : null;
-                @endphp
 
                 <tr>
                     <td style="text-align:center;">{{ $i + 1 }}</td>
@@ -209,14 +201,14 @@
                     <td>{{ $d->perihal }}</td>
                     <td style="text-align:center;">{{ $d->status }}</td>
 
-                    <<td class="qr-box">
+                    <td class="qr-box">
                         @if (!empty($qrMap[$d->id]))
                             <img class="qr-img" src="{{ $qrMap[$d->id] }}" alt="QR">
                             <div class="qr-text">Scan</div>
                         @else
                             <div class="qr-text">-</div>
                         @endif
-                        </td>
+                    </td>
 
                 </tr>
             @empty

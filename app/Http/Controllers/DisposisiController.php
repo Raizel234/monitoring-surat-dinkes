@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Disposisi;
 use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DisposisiController extends Controller
 {
@@ -14,28 +15,30 @@ class DisposisiController extends Controller
             'status' => 'required|in:Menunggu,Diproses,Selesai',
         ]);
 
-        $disposisi = Disposisi::findOrFail($id);
-        $disposisi->update([
-            'status' => $request->status,
-        ]);
+        DB::transaction(function () use ($request, $id) {
+            $disposisi = Disposisi::findOrFail($id);
 
-        // ✅ Otomatis update status Surat Masuk
-        $surat = SuratMasuk::with('disposisis')->findOrFail($disposisi->surat_masuk_id);
+            // Validasi transisi status (tidak boleh mundur dari Selesai)
+            if ($disposisi->status === 'Selesai' && $request->status !== 'Selesai') {
+                abort(400, 'Tidak dapat mengubah status yang sudah selesai.');
+            }
 
-        // kalau ADA disposisi yang belum selesai -> surat Diproses
-        $adaBelumSelesai = $surat->disposisis()->where('status', '!=', 'Selesai')->exists();
+            $disposisi->update(['status' => $request->status]);
 
-        if ($adaBelumSelesai) {
-            $surat->update(['status' => 'Diproses']);
-        } else {
-            $surat->update(['status' => 'Selesai']);
-        }
-        logAktivitas('Ubah Status Disposisi', 'Disposisi', 'Disposisi', $disposisi->id, 'Status disposisi menjadi: ' . $request->status);
+            $surat = SuratMasuk::with('disposisis')->findOrFail($disposisi->surat_masuk_id);
+            $adaBelumSelesai = $surat->disposisis()->where('status', '!=', 'Selesai')->exists();
+
+            $surat->update(['status' => $adaBelumSelesai ? 'Diproses' : 'Selesai']);
+
+            logAktivitas(
+                'Ubah Status Disposisi',
+                'Disposisi',
+                'Disposisi',
+                $disposisi->id,
+                'Status disposisi menjadi: ' . $request->status
+            );
+        });
 
         return back()->with('success', 'Status disposisi berhasil diperbarui.');
-    }
-    public function suratMasuk()
-    {
-        return $this->belongsTo(\App\Models\SuratMasuk::class);
     }
 }

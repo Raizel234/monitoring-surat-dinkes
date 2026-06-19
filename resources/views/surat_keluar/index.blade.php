@@ -11,16 +11,16 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
-            background: white;
+            background: var(--card);
         }
 
         .table thead {
-            background-color: #f8f9fa;
+            background-color: var(--bg);
         }
 
         .table thead th {
             border: none;
-            color: #495057;
+            color: var(--muted);
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 1px;
@@ -30,12 +30,12 @@
         .table tbody td {
             padding: 15px;
             vertical-align: middle;
-            color: #444;
-            border-bottom: 1px solid #f1f1f1;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
         }
 
         .table tbody tr:hover {
-            background-color: #fcfcfc;
+            background-color: rgba(25, 135, 84, 0.04);
             transition: 0.2s;
         }
 
@@ -79,7 +79,7 @@
             border: none;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            background: #fff;
+            background: var(--card);
         }
 
         .meta-pill {
@@ -141,7 +141,11 @@
             <p class="text-muted small mb-0">Arsip surat keluar. Semua pegawai dapat melihat.</p>
         </div>
 
-
+        @if (in_array(auth()->user()->role, ['admin', 'pegawai']))
+        <a href="{{ route('surat-keluar.create') }}" class="btn btn-success rounded-3 px-4">
+            <i class="bi bi-plus-circle me-2"></i> Tambah Surat Keluar
+        </a>
+        @endif
     </div>
 
     {{-- ✅ Filter --}}
@@ -318,13 +322,7 @@
 
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    @if (auth()->user()->role === 'admin')
-                                        <a href="{{ route('surat-keluar.edit', $d->id) }}"
-                                            class="btn btn-warning action-btn text-white" title="Edit Surat">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                    @endif
-                                    @if (auth()->user()->role === 'pegawai')
+                                    @if (in_array(auth()->user()->role, ['admin', 'pegawai']))
                                         <a href="{{ route('surat-keluar.edit', $d->id) }}"
                                             class="btn btn-warning action-btn text-white" title="Edit Surat">
                                             <i class="bi bi-pencil-square"></i>
@@ -335,14 +333,16 @@
                                         <i class="bi bi-eye"></i>
                                     </a>
 
+                                    @if (auth()->user()->role === 'admin')
                                     <form action="{{ route('surat-keluar.destroy', $d->id) }}" method="POST"
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data surat ini?')">
+                                        data-confirm="Apakah Anda yakin ingin menghapus data surat ini?">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-danger action-btn" title="Hapus Surat">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

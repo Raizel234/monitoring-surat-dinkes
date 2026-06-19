@@ -190,13 +190,6 @@
         </thead>
         <tbody>
             @forelse($data as $i => $d)
-                @php
-                    $verifUrl = isset($verifBaseUrl) ? $verifBaseUrl . '/' . $d->id : null;
-                    $qrUrl = $verifUrl
-                        ? 'https://chart.googleapis.com/chart?chs=140x140&cht=qr&chld=L|0&chl=' . urlencode($verifUrl)
-                        : null;
-                @endphp
-
                 <tr>
                     <td style="text-align:center;">{{ $i + 1 }}</td>
                     <td>{{ $d->nomor_surat }}</td>

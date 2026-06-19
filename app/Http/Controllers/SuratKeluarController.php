@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SuratKeluar;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -68,9 +69,9 @@ class SuratKeluarController extends Controller
         $validated = $request->validate([
             'nomor_surat' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
-            'tujuan' => 'required|string|max:255', // ✅ tujuan instansi
+            'tujuan' => 'required|string|max:255',
             'perihal' => 'required|string|max:255',
-            'status' => 'nullable|string|max:50',
+            'status' => 'nullable|in:Draft,Dikirim,Terkirim,Selesai',
 
             'jenis_surat' => 'required|in:lembar_kendali,nota_dinas,surat_keputusan',
 
@@ -111,7 +112,19 @@ class SuratKeluarController extends Controller
 
         $validated['nomor_agenda'] = 'AGK-' . now()->format('YmdHis');
 
-        $surat = SuratKeluar::create($validated);
+        $surat = DB::transaction(function () use ($validated) {
+            $s = SuratKeluar::create($validated);
+
+            logAktivitas(
+                'Tambah Surat Keluar',
+                'Surat Keluar',
+                'SuratKeluar',
+                $s->id,
+                'Menambahkan surat keluar | Nomor: ' . $s->nomor_surat
+            );
+
+            return $s;
+        });
 
         return redirect()->route('surat-keluar.show', $surat->id)
             ->with('success', 'Surat keluar berhasil disimpan.');
@@ -144,7 +157,7 @@ class SuratKeluarController extends Controller
             'tanggal_surat' => 'required|date',
             'tujuan' => 'required|string|max:255',
             'perihal' => 'required|string|max:255',
-            'status' => 'nullable|string|max:50',
+            'status' => 'nullable|in:Draft,Dikirim,Terkirim,Selesai',
 
             'jenis_surat' => 'required|in:lembar_kendali,nota_dinas,surat_keputusan',
 
@@ -176,14 +189,24 @@ class SuratKeluarController extends Controller
             'file_surat' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
-        if ($request->hasFile('file_surat')) {
-            if ($suratKeluar->file_surat) {
-                Storage::disk('public')->delete($suratKeluar->file_surat);
+        DB::transaction(function () use ($request, $validated, $suratKeluar) {
+            if ($request->hasFile('file_surat')) {
+                if ($suratKeluar->file_surat) {
+                    Storage::disk('public')->delete($suratKeluar->file_surat);
+                }
+                $validated['file_surat'] = $request->file('file_surat')->store('surat_keluar', 'public');
             }
-            $validated['file_surat'] = $request->file('file_surat')->store('surat_keluar', 'public');
-        }
 
-        $suratKeluar->update($validated);
+            $suratKeluar->update($validated);
+
+            logAktivitas(
+                'Edit Surat Keluar',
+                'Surat Keluar',
+                'SuratKeluar',
+                $suratKeluar->id,
+                'Mengubah surat keluar nomor: ' . $suratKeluar->nomor_surat
+            );
+        });
 
         return redirect()->route('surat-keluar.show', $suratKeluar->id)
             ->with('success', 'Surat keluar berhasil diupdate.');
@@ -191,11 +214,21 @@ class SuratKeluarController extends Controller
 
     public function destroy(SuratKeluar $suratKeluar)
     {
-        if ($suratKeluar->file_surat) {
-            Storage::disk('public')->delete($suratKeluar->file_surat);
-        }
+        DB::transaction(function () use ($suratKeluar) {
+            if ($suratKeluar->file_surat) {
+                Storage::disk('public')->delete($suratKeluar->file_surat);
+            }
 
-        $suratKeluar->delete();
+            logAktivitas(
+                'Hapus Surat Keluar',
+                'Surat Keluar',
+                'SuratKeluar',
+                $suratKeluar->id,
+                'Menghapus surat keluar nomor: ' . $suratKeluar->nomor_surat
+            );
+
+            $suratKeluar->delete();
+        });
 
         return redirect()->route('surat-keluar.index')->with('success', 'Surat keluar dihapus.');
     }
@@ -221,7 +254,7 @@ class SuratKeluarController extends Controller
             'surat_keputusan' => 'pdf.surat_keluar.surat_keputusan',
         ];
 
-        $qrUrl = route('verifikasi.surat_keluar', $suratKeluar->id);
+        $qrUrl = route('verifikasi.surat_keluar', $suratKeluar->qr_token ?? $suratKeluar->id);
 
         $renderer = new ImageRenderer(new RendererStyle(160), new SvgImageBackEnd());
         $writer = new Writer($renderer);

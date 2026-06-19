@@ -201,6 +201,21 @@
                         <i class="bi bi-arrow-repeat stat-icon-bg"></i>
                     </div>
                 </div>
+
+                <div class="col-md-3">
+                    <div class="card stat-card card-selesai shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-uppercase fw-bold opacity-75 small mb-2">Disposisi Selesai</h6>
+                                <h2 class="display-6 fw-bold mb-0">{{ $disposisiSelesai }}</h2>
+                            </div>
+                            <div class="bg-white bg-opacity-25 p-3 rounded-circle">
+                                <i class="bi bi-check2-all fs-3"></i>
+                            </div>
+                        </div>
+                        <i class="bi bi-check2-all stat-icon-bg"></i>
+                    </div>
+                </div>
             </div>
 
             {{-- ✅ DEADLINE DISPOSISI TERDEKAT --}}
@@ -281,7 +296,7 @@
                         <ul class="list-unstyled small text-muted">
                             <li class="mb-2 d-flex justify-content-between">
                                 <span>Versi Aplikasi</span>
-                                <span class="badge bg-light text-dark border">v1.0.2</span>
+                                <span class="badge bg-light text-dark border">v{{ config('app.version', '2.0.0') }}</span>
                             </li>
                             <li class="mb-2 d-flex justify-content-between">
                                 <span>Status Database</span>
@@ -289,7 +304,7 @@
                             </li>
                             <li class="d-flex justify-content-between">
                                 <span>Server</span>
-                                <span>Production</span>
+                                <span>{{ ucfirst(app()->environment()) }}</span>
                             </li>
                         </ul>
                     </div>

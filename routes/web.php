@@ -12,6 +12,11 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\VerifikasiController;
 use App\Http\Controllers\BeritaPublicController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\GaleriController;
+use App\Http\Controllers\SliderController;
+use App\Http\Controllers\HalamanController;
+use App\Http\Controllers\GaleriPublicController;
+use App\Http\Controllers\HalamanPublicController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,30 +32,16 @@ Route::get('/', function () {
 | PUBLIK (TANPA LOGIN)
 |--------------------------------------------------------------------------
 */
-Route::prefix('profil')->group(function () {
-
-    Route::get('/visi-misi', function () {
-        return view('profil.visimisi');
-    })->name('profil.visimisi');
-
-    Route::get('/struktur', function () {
-        return view('profil.struktur');
-    })->name('profil.struktur');
-
-    Route::get('/galeri', function () {
-        return view('profil.galeri');
-    })->name('profil.galeri');
-
-    Route::get('/sosmed', function () {
-        return view('profil.sosmed');
-    })->name('profil.sosmed');
+Route::prefix('profil')->name('profil.')->group(function () {
+    Route::get('/visi-misi', [HalamanPublicController::class, 'profil'])->defaults('sub', 'visi_misi')->name('visimisi');
+    Route::get('/struktur', [HalamanPublicController::class, 'profil'])->defaults('sub', 'struktur')->name('struktur');
+    Route::get('/sosmed', [HalamanPublicController::class, 'profil'])->defaults('sub', 'sosmed')->name('sosmed');
 });
-Route::prefix('layanan')->group(function () {
-
-    Route::get('/layanan', function () {
-        return view('layanan.layanan');
-    })->name('layanan.layanan');
+Route::prefix('layanan')->name('layanan.')->group(function () {
+    Route::get('/', [HalamanPublicController::class, 'layanan'])->name('index');
 });
+Route::get('/galeri', [GaleriPublicController::class, 'index'])->name('galeri.index');
+Route::get('/galeri/{id}', [GaleriPublicController::class, 'show'])->name('galeri.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +50,14 @@ Route::prefix('layanan')->group(function () {
 */
 Route::get('/berita', [BeritaPublicController::class, 'index'])->name('berita.public.index');
 Route::get('/berita/{slug}', [BeritaPublicController::class, 'show'])->name('berita.public.show');
+
+/*
+|--------------------------------------------------------------------------
+| VERIFIKASI PUBLIK (TANPA LOGIN)
+|--------------------------------------------------------------------------
+*/
+Route::get('/verifikasi/surat-masuk/{id}', [VerifikasiController::class, 'suratMasuk'])->name('verifikasi.surat_masuk');
+Route::get('/verifikasi/surat-keluar/{token}', [VerifikasiController::class, 'suratKeluar'])->name('verifikasi.surat_keluar');
 
 /*
 |--------------------------------------------------------------------------
@@ -105,10 +104,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/surat-masuk/{id}/kendali/pdf', [SuratMasukController::class, 'lembarKendaliPdf'])->name('surat-masuk.kendali.pdf');
 
-    // Verifikasi
-    Route::get('/verifikasi/surat-masuk/{id}', [VerifikasiController::class, 'suratMasuk'])->name('verifikasi.surat_masuk');
-    Route::get('/verifikasi/surat-keluar/{id}', [VerifikasiController::class, 'suratKeluar'])->name('verifikasi.surat_keluar');
-
     // Update status
     Route::patch('/disposisi/{id}/status', [DisposisiController::class, 'updateStatus'])->name('disposisi.updateStatus');
 
@@ -123,7 +118,10 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::resource('berita', BeritaController::class)->except(['show']);
             Route::resource('users', AdminUserController::class)->except(['show']);
+            Route::resource('galeri', GaleriController::class)->except(['show']);
+            Route::resource('slider', SliderController::class)->except(['show']);
+            Route::resource('halaman', HalamanController::class)->except(['show']);
         });
 });
 
-require __DIR__ . '/auth.php';
+

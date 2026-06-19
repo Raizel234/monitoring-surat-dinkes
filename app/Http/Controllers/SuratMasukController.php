@@ -9,6 +9,8 @@ use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
@@ -67,7 +69,7 @@ class SuratMasukController extends Controller
             $query->whereDate('tanggal_surat', '<=', $to);
         }
 
-        $data = $query->latest()->get();
+        $data = $query->latest()->paginate(15)->withQueryString();
 
         return view('surat_masuk.index', compact('data'));
     }
@@ -95,63 +97,46 @@ class SuratMasukController extends Controller
             'sifat_surat' => 'nullable|in:Biasa,Penting,Rahasia',
             'kategori_surat' => 'nullable|string|max:100',
             'unit_pengolah' => 'nullable|string|max:150',
+            'status' => 'nullable|in:Diterima,Diproses,Selesai',
+            'klasifikasi' => 'nullable|string|max:255',
 
-            // ✅ tujuan pegawai = tabel recipients
             'tujuan_user_id' => 'required|exists:users,id',
         ]);
 
-        // upload file
-        $file = null;
-        if ($request->hasFile('file_surat')) {
-            $file = $request->file('file_surat')->store('surat', 'public');
-        }
+        DB::transaction(function () use ($request) {
+            $file = null;
+            if ($request->hasFile('file_surat')) {
+                $file = $request->file('file_surat')->store('surat', 'public');
+            }
 
-        // generate nomor agenda otomatis
-        $tahun = Carbon::parse($request->tanggal_surat)->year;
-        $last = SuratMasuk::whereYear('tanggal_surat', $tahun)->orderBy('id', 'desc')->first();
+            $surat = SuratMasuk::create([
+                'nomor_surat'    => $request->nomor_surat,
+                'tanggal_surat'  => $request->tanggal_surat,
+                'pengirim'       => $request->pengirim,
+                'perihal'        => $request->perihal,
+                'file_surat'     => $file,
+                'status'         => $request->status ?? 'Diterima',
 
-        $urutan = $last ? ((int) substr((string)$last->nomor_agenda, 4, 4)) + 1 : 1;
+                'sifat_surat'    => $request->sifat_surat,
+                'kategori_surat' => $request->kategori_surat,
+                'unit_pengolah'  => $request->unit_pengolah,
+                'klasifikasi'    => $request->klasifikasi,
+            ]);
 
-        $bulanRomawi = [
-            1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI',
-            7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII',
-        ];
-        $bulan = $bulanRomawi[Carbon::parse($request->tanggal_surat)->month];
-        $nomorAgenda = 'AGM-' . str_pad($urutan, 4, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
+            SuratMasukRecipient::create([
+                'surat_masuk_id' => $surat->id,
+                'user_id'        => $request->tujuan_user_id,
+                'read_at'        => null,
+            ]);
 
-        // simpan surat
-        $surat = SuratMasuk::create([
-            'nomor_agenda'   => $nomorAgenda,
-            'nomor_surat'    => $request->nomor_surat,
-            'tanggal_surat'  => $request->tanggal_surat,
-            'pengirim'       => $request->pengirim,
-            'perihal'        => $request->perihal,
-            'file_surat'     => $file,
-            'status'         => $request->status ?? 'Diterima',
-
-            'sifat_surat'    => $request->sifat_surat,
-            'kategori_surat' => $request->kategori_surat,
-            'unit_pengolah'  => $request->unit_pengolah,
-
-            // NOTE: "klasifikasi" kalau masih kamu pakai untuk teks tujuan klasifikasi
-            'klasifikasi'    => $request->klasifikasi,
-        ]);
-
-        // simpan penerima
-        SuratMasukRecipient::create([
-            'surat_masuk_id' => $surat->id,
-            'user_id'        => $request->tujuan_user_id,
-            'read_at'        => null,
-        ]);
-
-        // log (pakai helper kamu)
-        logAktivitas(
-            'Tambah Surat Masuk',
-            'Surat Masuk',
-            'SuratMasuk',
-            $surat->id,
-            'Menambahkan surat masuk | Agenda: ' . $nomorAgenda . ' | Nomor Surat: ' . $surat->nomor_surat
-        );
+            logAktivitas(
+                'Tambah Surat Masuk',
+                'Surat Masuk',
+                'SuratMasuk',
+                $surat->id,
+                'Menambahkan surat masuk | Agenda: ' . ($surat->nomor_agenda ?? '-') . ' | Nomor Surat: ' . $surat->nomor_surat
+            );
+        });
 
         return redirect()
             ->route('surat-masuk.index')
@@ -187,42 +172,47 @@ class SuratMasukController extends Controller
             'sifat_surat' => 'nullable|in:Biasa,Penting,Rahasia',
             'kategori_surat' => 'nullable|string|max:100',
             'unit_pengolah' => 'nullable|string|max:150',
+            'klasifikasi' => 'nullable|string|max:255',
 
             'tujuan_user_id' => 'required|exists:users,id',
         ]);
 
-        if ($request->hasFile('file_surat')) {
-            $file = $request->file('file_surat')->store('surat', 'public');
-            $data->file_surat = $file;
-        }
+        DB::transaction(function () use ($request, $data) {
+            $updateData = [
+                'nomor_surat'    => $request->nomor_surat,
+                'tanggal_surat'  => $request->tanggal_surat,
+                'pengirim'       => $request->pengirim,
+                'perihal'        => $request->perihal,
+                'status'         => $request->status ?? $data->status,
 
-        $data->update([
-            'nomor_surat'    => $request->nomor_surat,
-            'tanggal_surat'  => $request->tanggal_surat,
-            'pengirim'       => $request->pengirim,
-            'perihal'        => $request->perihal,
-            'status'         => $request->status ?? $data->status,
+                'sifat_surat'    => $request->sifat_surat,
+                'kategori_surat' => $request->kategori_surat,
+                'unit_pengolah'  => $request->unit_pengolah,
+                'klasifikasi'    => $request->klasifikasi,
+            ];
 
-            'sifat_surat'    => $request->sifat_surat,
-            'kategori_surat' => $request->kategori_surat,
-            'unit_pengolah'  => $request->unit_pengolah,
+            if ($request->hasFile('file_surat')) {
+                if ($data->file_surat) {
+                    Storage::disk('public')->delete($data->file_surat);
+                }
+                $updateData['file_surat'] = $request->file('file_surat')->store('surat', 'public');
+            }
 
-            'klasifikasi'    => $request->klasifikasi,
-        ]);
+            $data->update($updateData);
 
-        // update penerima
-        SuratMasukRecipient::updateOrCreate(
-            ['surat_masuk_id' => $data->id],
-            ['user_id' => $request->tujuan_user_id]
-        );
+            SuratMasukRecipient::updateOrCreate(
+                ['surat_masuk_id' => $data->id],
+                ['user_id' => $request->tujuan_user_id]
+            );
 
-        logAktivitas(
-            'Edit Surat Masuk',
-            'Surat Masuk',
-            'SuratMasuk',
-            $data->id,
-            'Mengubah surat masuk nomor: ' . $data->nomor_surat
-        );
+            logAktivitas(
+                'Edit Surat Masuk',
+                'Surat Masuk',
+                'SuratMasuk',
+                $data->id,
+                'Mengubah surat masuk nomor: ' . $data->nomor_surat
+            );
+        });
 
         return redirect()->route('surat-masuk.index')->with('success', 'Data surat berhasil diperbarui.');
     }
@@ -250,16 +240,23 @@ class SuratMasukController extends Controller
 
     public function destroy(SuratMasuk $surat_masuk)
     {
-        logAktivitas(
-            'Hapus Surat Masuk',
-            'Surat Masuk',
-            'SuratMasuk',
-            $surat_masuk->id,
-            'Menghapus surat masuk nomor: ' . $surat_masuk->nomor_surat
-        );
+        DB::transaction(function () use ($surat_masuk) {
+            if ($surat_masuk->file_surat) {
+                Storage::disk('public')->delete($surat_masuk->file_surat);
+            }
 
-        $surat_masuk->delete();
-        return redirect()->route('surat-masuk.index');
+            logAktivitas(
+                'Hapus Surat Masuk',
+                'Surat Masuk',
+                'SuratMasuk',
+                $surat_masuk->id,
+                'Menghapus surat masuk nomor: ' . $surat_masuk->nomor_surat
+            );
+
+            $surat_masuk->delete();
+        });
+
+        return redirect()->route('surat-masuk.index')->with('success', 'Surat berhasil dihapus.');
     }
 
     // =====================
@@ -367,7 +364,7 @@ class SuratMasukController extends Controller
         $safeAgenda = preg_replace('/[\/\\\\]+/', '-', (string)($surat->nomor_agenda ?? 'AGENDA'));
         $safeNoSurat = preg_replace('/[\/\\\\]+/', '-', (string)$surat->nomor_surat);
 
-        $qrUrl = route('verifikasi.surat_masuk', $surat->id);
+        $qrUrl = route('verifikasi.surat_masuk', $surat->qr_token ?? $surat->id);
 
         $renderer = new ImageRenderer(new RendererStyle(160), new SvgImageBackEnd());
         $writer = new Writer($renderer);

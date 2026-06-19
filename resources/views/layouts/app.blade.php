@@ -6,6 +6,7 @@
     <link rel="icon" type="image/x-icon" href="/images/avatar/Lambang_Kabupaten_Sumenep.png">
     <title>Sistem Monitoring Surat | Dinkes Sumenep</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -172,6 +173,20 @@
             box-shadow: 0 8px 18px rgba(0, 0, 0, .15);
         }
 
+        .user-avatar-sm {
+            width: 32px;
+            height: 32px;
+            background: var(--dinas-accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dinas-dark);
+            font-weight: 900;
+            font-size: .85rem;
+            flex: 0 0 auto;
+        }
+
         .nav-label {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -299,6 +314,104 @@
 
         body.dark-mode .topbar {
             background: rgba(15, 23, 42, .78);
+        }
+
+        body.dark-mode .topbar .dropdown-toggle {
+            background: rgba(255, 255, 255, .08) !important;
+            color: #e5e7eb;
+        }
+        body.dark-mode .topbar .dropdown-toggle .text-muted {
+            color: rgba(255,255,255,.55) !important;
+        }
+        body.dark-mode .topbar .dropdown-menu {
+            background: #1a2332;
+            border-color: rgba(255,255,255,.1);
+        }
+        body.dark-mode .topbar .dropdown-item {
+            color: #e5e7eb;
+        }
+        body.dark-mode .topbar .dropdown-item:hover {
+            background: rgba(255,255,255,.08);
+        }
+        body.dark-mode .topbar .dropdown-divider {
+            border-color: rgba(255,255,255,.1);
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #1a2332;
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #e5e7eb;
+        }
+
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            background-color: #1a2332;
+            border-color: var(--dinas-primary);
+            color: #e5e7eb;
+        }
+
+        body.dark-mode .table {
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-outline-dark {
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        body.dark-mode .btn-outline-dark:hover {
+            background: var(--dinas-primary);
+            border-color: var(--dinas-primary);
+            color: #fff;
+        }
+
+        body.dark-mode .bg-light {
+            background-color: #1a2332 !important;
+        }
+
+        body.dark-mode .bg-white {
+            background-color: var(--card) !important;
+        }
+
+        body.dark-mode .text-dark {
+            color: var(--text) !important;
+        }
+
+        body.dark-mode .alert-success {
+            background: rgba(25, 135, 84, 0.2);
+            border-color: rgba(25, 135, 84, 0.3);
+            color: var(--text);
+        }
+
+        .pagination {
+            gap: 4px;
+        }
+
+        .page-link {
+            border-radius: 10px !important;
+            margin: 0 2px;
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: var(--card);
+            transition: 0.2s;
+        }
+
+        .page-link:hover {
+            background: var(--dinas-primary);
+            color: #fff;
+            border-color: var(--dinas-primary);
+        }
+
+        .page-item.active .page-link {
+            background: var(--dinas-primary);
+            border-color: var(--dinas-primary);
+        }
+
+        .page-item.disabled .page-link {
+            color: var(--muted);
+            background: var(--card);
+            border-color: var(--border);
         }
 
         .topbar-left {
@@ -598,6 +711,18 @@
             'admin.berita.create' => ['Tambah Berita', 'Input berita baru'],
             'admin.berita.edit' => ['Edit Berita', 'Perbarui berita'],
 
+            'admin.galeri.index' => ['Galeri', 'Kelola galeri foto'],
+            'admin.galeri.create' => ['Tambah Galeri', 'Input foto baru'],
+            'admin.galeri.edit' => ['Edit Galeri', 'Perbarui foto'],
+
+            'admin.slider.index' => ['Slider', 'Kelola banner slider'],
+            'admin.slider.create' => ['Tambah Slider', 'Input slide baru'],
+            'admin.slider.edit' => ['Edit Slider', 'Perbarui slide'],
+
+            'admin.halaman.index' => ['Halaman CMS', 'Kelola halaman profil & layanan'],
+            'admin.halaman.create' => ['Tambah Halaman', 'Input halaman baru'],
+            'admin.halaman.edit' => ['Edit Halaman', 'Perbarui halaman'],
+
             'dokumen-publik.index' => ['Dokumen Publik', 'Kelola dokumen publik'],
         ];
 
@@ -607,7 +732,7 @@
         $openSuratMasuk = request()->routeIs('surat-masuk.*');
         $openSuratKeluar = request()->routeIs('surat-keluar.*');
 
-        $openKontenPublik = request()->routeIs('admin.berita.*') || request()->routeIs('dokumen-publik.*');
+        $openKontenPublik = request()->routeIs('admin.berita.*') || request()->routeIs('admin.galeri.*') || request()->routeIs('admin.slider.*') || request()->routeIs('admin.halaman.*') || request()->routeIs('dokumen-publik.*');
     @endphp
 
     <header class="topbar">
@@ -638,6 +763,36 @@
                     <div class="value">{{ now()->translatedFormat('d M Y') }}</div>
                 </div>
             </div>
+
+            {{-- User Dropdown --}}
+            <div class="dropdown ms-2">
+                <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 rounded-pill shadow-sm px-3 py-1 border-0"
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="background:rgba(255,255,255,.9);">
+                    <div class="user-avatar-sm">{{ substr(Auth::user()->name, 0, 1) }}</div>
+                    <div class="text-start lh-1 d-none d-md-block">
+                        <div class="fw-semibold small">{{ Auth::user()->name }}</div>
+                        <small class="text-muted" style="font-size:11px;">{{ ucfirst(Auth::user()->role) }}</small>
+                    </div>
+                    <i class="bi bi-chevron-down text-muted" style="font-size:12px;"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 py-2" style="min-width:200px;">
+                    <li>
+                        <a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
+                            <i class="bi bi-person-circle me-2"></i> Edit Profil
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item py-2 text-danger">
+                                <i class="bi bi-box-arrow-right me-2"></i> Keluar
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
     </header>
 
@@ -655,16 +810,6 @@
         </div>
 
         <div class="sidebar-scroll">
-            <div class="sidebar-user">
-                <div class="user-avatar">{{ substr(Auth::user()->name, 0, 1) }}</div>
-                <div class="ms-3 overflow-hidden">
-                    <h6 class="mb-0 fw-bold text-truncate">{{ Auth::user()->name }}</h6>
-
-                </div>
-            </div>
-
-
-
             <div class="menu-divider"></div>
 
             <nav class="nav flex-column">
@@ -686,14 +831,7 @@
                 </a>
                 <div class="collapse {{ $openSuratMasuk ? 'show' : '' }}" id="suratMasukMenu">
                     <div class="nav-collapse">
-                         @if (auth()->user()->role === 'admin')
-                        <a href="{{ route('surat-masuk.create') }}"
-                            class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
-                            <i class="bi bi-plus-circle"></i>
-                            <span class="nav-text">Register Surat Masuk</span>
-                        </a>
-                        @endif
-                         @if (auth()->user()->role === 'pegawai')
+                        @if (in_array(auth()->user()->role, ['admin', 'pegawai']))
                         <a href="{{ route('surat-masuk.create') }}"
                             class="nav-sub {{ request()->routeIs('surat-masuk.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
@@ -721,14 +859,7 @@
                 </a>
                 <div class="collapse {{ $openSuratKeluar ? 'show' : '' }}" id="suratKeluarMenu">
                     <div class="nav-collapse">
-                        @if (auth()->user()->role === 'admin')
-                        <a href="{{ route('surat-keluar.create') }}"
-                            class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
-                            <i class="bi bi-plus-circle"></i>
-                            <span class="nav-text">Register Surat Keluar</span>
-                        </a>
-                        @endif
-                        @if (auth()->user()->role === 'pegawai')
+                        @if (in_array(auth()->user()->role, ['admin', 'pegawai']))
                         <a href="{{ route('surat-keluar.create') }}"
                             class="nav-sub {{ request()->routeIs('surat-keluar.create') ? 'active' : '' }}">
                             <i class="bi bi-plus-circle"></i>
@@ -780,27 +911,49 @@
                             <i class="bi bi-newspaper"></i>
                             <span class="nav-text">Kelola Berita</span>
                         </a>
-
-
+                        <a href="{{ route('admin.galeri.index') }}"
+                            class="nav-sub {{ request()->routeIs('admin.galeri.*') ? 'active' : '' }}">
+                            <i class="bi bi-images"></i>
+                            <span class="nav-text">Galeri Foto</span>
+                        </a>
+                        <a href="{{ route('admin.slider.index') }}"
+                            class="nav-sub {{ request()->routeIs('admin.slider.*') ? 'active' : '' }}">
+                            <i class="bi bi-sliders"></i>
+                            <span class="nav-text">Hero Slider</span>
+                        </a>
+                        <a href="{{ route('admin.halaman.index') }}"
+                            class="nav-sub {{ request()->routeIs('admin.halaman.*') ? 'active' : '' }}">
+                            <i class="bi bi-file-text"></i>
+                            <span class="nav-text">Halaman CMS</span>
+                        </a>
+                        <a href="#" class="nav-sub">
+                            <i class="bi bi-folder"></i>
+                            <span class="nav-text">Dokumen Publik</span>
+                        </a>
                     </div>
                 </div>
                  @endif
 
                 @if (auth()->user()->role === 'admin')
                 <div class="nav-label">User</div>
-                    <li>
-                        <a href="{{ route('admin.users.index') }}"
-                            class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                            <i class="bi bi-people"></i> <span class="nav-text">Data User</span>
-                        </a>
-                    </li>
+                    <a href="{{ route('admin.users.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i> <span class="nav-text">Data User</span>
+                    </a>
                 @endif
 
-                
             </nav>
+
+            {{-- Theme Toggle --}}
+            <div class="theme-toggle" id="themeToggle" role="button" tabindex="0" aria-label="Toggle Dark Mode">
+                <div class="left">
+                    <i id="themeToggleIcon" class="bi bi-toggle-off fs-4"></i>
+                    <span>Tema Gelap</span>
+                </div>
+                <small class="opacity-50" id="themeStatusLabel">Aktif</small>
+            </div>
         </div>
 
-        
     </aside>
 
     <button class="sidebar-fab" id="sidebarFab" title="Menu">
@@ -882,19 +1035,77 @@
         // ===== DARK MODE =====
         const themeToggle = document.getElementById('themeToggle');
         const themeToggleIcon = document.getElementById('themeToggleIcon');
+        const themeStatusLabel = document.getElementById('themeStatusLabel');
 
         function applyTheme(isDark) {
             document.body.classList.toggle('dark-mode', isDark);
-            themeToggleIcon.className = isDark ? 'bi bi-toggle-on fs-4' : 'bi bi-toggle-off fs-4';
+            if (themeToggleIcon) {
+                themeToggleIcon.className = isDark ? 'bi bi-toggle-on fs-4' : 'bi bi-toggle-off fs-4';
+            }
+            if (themeStatusLabel) {
+                themeStatusLabel.textContent = isDark ? 'Aktif' : 'Nonaktif';
+            }
         }
 
         const savedTheme = localStorage.getItem('theme');
         applyTheme(savedTheme === 'dark');
 
-        themeToggle.addEventListener('click', () => {
-            const isDarkNow = !document.body.classList.contains('dark-mode');
-            applyTheme(isDarkNow);
-            localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const isDarkNow = !document.body.classList.contains('dark-mode');
+                applyTheme(isDarkNow);
+                localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+            });
+        }
+
+        // ===== CONFIRM DELETE =====
+        document.addEventListener('click', function(e) {
+            const form = e.target.closest('form[data-confirm]');
+            if (!form) return;
+            e.preventDefault();
+            if (confirm(form.getAttribute('data-confirm') || 'Yakin ingin melanjutkan?')) {
+                form.submit();
+            }
+        });
+
+        // ===== LOADING SPINNER PADA FILTER BUTTON =====
+        document.querySelectorAll('form').forEach(function(form) {
+            const submitBtn = form.querySelector('button[type="submit"].btn-success, button[type="submit"].btn-primary');
+            if (!submitBtn) return;
+            const hasFilters = form.querySelector('input[name="q"], input[name="from"], input[name="to"], select[name="status"]');
+            if (!hasFilters) return;
+
+            form.addEventListener('submit', function() {
+                const original = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memuat...';
+                // Re-enable after timeout (fallback if page doesn't reload)
+                setTimeout(function() {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = original;
+                }, 10000);
+            });
+        });
+
+        // ===== TOOLTIP INIT =====
+        document.querySelectorAll('[title]').forEach(function(el) {
+            if (el.getAttribute('title') && !el.closest('form')) {
+                el.setAttribute('data-bs-toggle', 'tooltip');
+            }
+        });
+        if (typeof bootstrap !== 'undefined') {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(el) {
+                return new bootstrap.Tooltip(el);
+            });
+        }
+
+        // ===== AUTO DISMISS ALERT =====
+        document.querySelectorAll('.alert-success').forEach(function(alert) {
+            setTimeout(function() {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
         });
     </script>
 

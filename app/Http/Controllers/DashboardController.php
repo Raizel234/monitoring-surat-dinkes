@@ -21,6 +21,7 @@ class DashboardController extends Controller
         // ✅ monitoring disposisi
         $disposisiMenunggu = Disposisi::where('status', 'Menunggu')->count();
         $disposisiDiproses = Disposisi::where('status', 'Diproses')->count();
+        $disposisiSelesai  = Disposisi::where('status', 'Selesai')->count();
 
         // ✅ deadline terdekat (yang belum selesai)
         $deadlineDisposisi = Disposisi::with('suratMasuk')
@@ -33,7 +34,7 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'masuk', 'keluar',
             'masukDiproses', 'masukSelesai',
-            'disposisiMenunggu', 'disposisiDiproses',
+            'disposisiMenunggu', 'disposisiDiproses', 'disposisiSelesai',
             'deadlineDisposisi'
         ));
     }

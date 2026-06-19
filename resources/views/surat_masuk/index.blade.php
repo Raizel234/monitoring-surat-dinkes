@@ -11,15 +11,16 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
+            background: var(--card);
         }
 
         .table thead {
-            background-color: #f8f9fa;
+            background-color: var(--bg);
         }
 
         .table thead th {
             border: none;
-            color: #495057;
+            color: var(--muted);
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 1px;
@@ -29,12 +30,12 @@
         .table tbody td {
             padding: 15px;
             vertical-align: middle;
-            color: #444;
-            border-bottom: 1px solid #f1f1f1;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
         }
 
         .table tbody tr:hover {
-            background-color: #f9fffb;
+            background-color: rgba(25, 135, 84, 0.04);
             transition: 0.2s;
         }
 
@@ -73,7 +74,7 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             overflow: hidden;
-            background: white;
+            background: var(--card);
         }
 
         .mini-muted { font-size: 0.8rem; color: #6c757d; }
@@ -98,8 +99,11 @@
             </p>
         </div>
 
-        {{-- (Opsional) tombol tambah surat hanya admin --}}
-       
+        @if (in_array(auth()->user()->role, ['admin', 'pegawai']))
+        <a href="{{ route('surat-masuk.create') }}" class="btn btn-success rounded-3 px-4">
+            <i class="bi bi-plus-circle me-2"></i> Tambah Surat Masuk
+        </a>
+        @endif
     </div>
 
     {{-- ✅ FILTER & SEARCH --}}
@@ -214,7 +218,7 @@
                                         @if($isRead)
                                             <span class="badge bg-success text-white ms-1">Sudah Dibaca</span>
                                         @else
-                                            <span class="badge bg-danger text-white ms-1">Belum Dibaca</span>
+                                            <span class="badge bg-primary text-white ms-1">Belum Dibaca</span>
                                         @endif
                                     @endif
                                 </div>
@@ -251,7 +255,7 @@
                                                 Dibaca: {{ $rec->read_at->format('d M Y H:i') }}
                                             </span>
                                         @else
-                                            <span class="badge bg-danger text-white">
+                                            <span class="badge bg-primary text-white">
                                                 Belum Dibaca
                                             </span>
                                         @endif
@@ -328,7 +332,7 @@
                                         </a>
                                     @endif
 
-                                    {{-- EDIT + HAPUS admin saja --}}
+                                    {{-- EDIT + HAPUS khusus admin --}}
                                     @if (auth()->user()->role === 'admin')
                                         <a href="{{ route('surat-masuk.edit', $d->id) }}"
                                             class="btn btn-warning action-btn text-white" title="Edit Data">
@@ -336,22 +340,7 @@
                                         </a>
 
                                         <form action="{{ route('surat-masuk.destroy', $d->id) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="btn btn-danger action-btn" title="Hapus Data">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    @endif
-                                    @if (auth()->user()->role === 'pegawai')
-                                        <a href="{{ route('surat-masuk.edit', $d->id) }}"
-                                            class="btn btn-warning action-btn text-white" title="Edit Data">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-
-                                        <form action="{{ route('surat-masuk.destroy', $d->id) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                            data-confirm="Yakin ingin menghapus data ini?">
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-danger action-btn" title="Hapus Data">
@@ -376,4 +365,10 @@
             </table>
         </div>
     </div>
+
+    @if (method_exists($data, 'links'))
+        <div class="mt-3">
+            {{ $data->withQueryString()->links() }}
+        </div>
+    @endif
 </x-app-layout>

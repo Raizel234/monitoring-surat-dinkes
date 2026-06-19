@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.verifikasi')
+
+@section('content')
     <style>
         .verify-card {
             border: 1px solid rgba(0,0,0,0.08);
@@ -121,4 +123,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

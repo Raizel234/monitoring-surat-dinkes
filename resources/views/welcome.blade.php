@@ -19,6 +19,9 @@
     {{-- AOS --}}
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
+    {{-- Swiper --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
     <style>
         :root {
             --primary-green: #198754;
@@ -230,6 +233,82 @@
         .hero-emblem {
             width: min(320px, 75%);
             filter: drop-shadow(0 22px 30px rgba(0, 0, 0, .35));
+        }
+
+        /* Hero Slider */
+        .hero-swiper {
+            width: 100%;
+            min-height: 90vh;
+        }
+        .hero-swiper .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-swiper .swiper-pagination-bullet {
+            background: rgba(255,255,255,.6);
+            opacity: 1;
+            width: 12px;
+            height: 12px;
+        }
+        .hero-swiper .swiper-pagination-bullet-active {
+            background: var(--accent-yellow);
+        }
+        .hero-swiper .swiper-button-next,
+        .hero-swiper .swiper-button-prev {
+            color: #fff;
+            background: rgba(0,0,0,.25);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+        }
+        .hero-swiper .swiper-button-next::after,
+        .hero-swiper .swiper-button-prev::after {
+            font-size: 18px;
+        }
+        .slide-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(.45);
+            z-index: 0;
+        }
+        .slide-content {
+            position: relative;
+            z-index: 1;
+            padding: 3rem 0;
+        }
+
+        /* News slider (Swiper) */
+        .news-swiper .swiper-slide {
+            height: auto;
+        }
+
+        /* Gallery */
+        .gallery-grid .gallery-item {
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            height: 260px;
+        }
+        .gallery-grid .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s ease;
+        }
+        .gallery-grid .gallery-item:hover img {
+            transform: scale(1.08);
+        }
+        .gallery-grid .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 1rem .8rem;
+            background: linear-gradient(transparent, rgba(0,0,0,.75));
+            color: #fff;
         }
 
         /* =========================
@@ -459,97 +538,18 @@
             }
         }
 
-        /* =========================
-           NEWS SLIDER (Berita geser kanan)
-        ========================== */
-        .news-slider {
-            position: relative;
-        }
-
-        .news-track {
+        .news-pagination {
+            position: static !important;
             display: flex;
-            gap: 18px;
-            overflow-x: auto;
-            padding: 6px 2px 14px;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
+            justify-content: center;
+            gap: 6px;
         }
-
-        .news-track::-webkit-scrollbar {
+        .news-pagination .swiper-pagination-bullet {
+            width: 10px;
             height: 10px;
         }
-
-        .news-track::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, .12);
-            border-radius: 999px;
-        }
-
-        .news-track::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, .04);
-            border-radius: 999px;
-        }
-
-        .news-item {
-            flex: 0 0 auto;
-            width: 340px;
-            scroll-snap-align: start;
-        }
-
-        @media (max-width: 992px) {
-            .news-item {
-                width: 300px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .news-item {
-                width: 86vw;
-            }
-        }
-
-        .news-nav-btn {
-            position: absolute;
-            top: 40%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            border-radius: 999px;
-            border: 1px solid rgba(0, 0, 0, .10);
-            background: #fff;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 14px 28px rgba(0, 0, 0, .12);
-            z-index: 5;
-            transition: .2s ease;
-        }
-
-        .news-nav-btn:hover {
-            transform: translateY(-50%) scale(1.05);
-        }
-
-        .news-nav-btn.prev {
-            left: -12px;
-        }
-
-        .news-nav-btn.next {
-            right: -12px;
-        }
-
-        @media (max-width: 576px) {
-            .news-nav-btn.prev {
-                left: 6px;
-            }
-
-            .news-nav-btn.next {
-                right: 6px;
-            }
-        }
-
-        .news-slider-pad {
-            padding-left: 24px;
-            padding-right: 24px;
+        .news-swiper .swiper-slide {
+            height: auto;
         }
     </style>
 </head>
@@ -614,11 +614,11 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('profil.visimisi') }}">Visi & Misi</a></li>
                             <li><a class="dropdown-item" href="{{ route('profil.struktur') }}">Struktur</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profil.galeri') }}">Galeri</a></li>
+                            <li><a class="dropdown-item" href="{{ route('galeri.index') }}">Galeri</a></li>
                             <li><a class="dropdown-item" href="{{ route('profil.sosmed') }}">Sosial Media</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('layanan.layanan') }}">Layanan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('layanan.index') }}">Layanan</a></li>
 
 
 
@@ -663,8 +663,54 @@
         </div>
     </div>
 
-    {{-- HERO --}}
-    <section class="hero">
+@php
+    $sliders = \App\Models\Slider::active()->get();
+@endphp
+
+<section class="hero">
+    @if ($sliders->count())
+        <div class="swiper hero-swiper">
+            <div class="swiper-wrapper">
+                @foreach ($sliders as $s)
+                    <div class="swiper-slide">
+                        <div class="slide-bg" style="background-image:url('{{ asset('storage/'.$s->gambar) }}')"></div>
+                        <div class="container slide-content text-center text-lg-start">
+                            <div class="row align-items-center g-5">
+                                <div class="col-lg-7" data-aos="fade-right">
+                                    <div class="d-inline-flex align-items-center gap-2 badge-gov mb-3">
+                                        <i class="bi bi-shield-lock-fill"></i>
+                                        <span>E-GOVERNMENT • SUMENEP</span>
+                                    </div>
+                                    <h1 class="hero-title fw-bold mb-3">
+                                        {{ $s->judul }}
+                                    </h1>
+                                    @if ($s->deskripsi)
+                                        <p class="hero-lead fs-5 mb-4">{{ $s->deskripsi }}</p>
+                                    @endif
+                                    <div class="hero-cta d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                                        @if ($s->link)
+                                            <a href="{{ $s->link }}" class="btn btn-light text-success shadow-lg">
+                                                Selengkapnya <i class="bi bi-arrow-right ms-2"></i>
+                                            </a>
+                                        @endif
+                                        <a href="{{ route('login') }}" class="btn btn-outline-light">
+                                            Masuk Sistem <i class="bi bi-box-arrow-in-right ms-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 d-none d-lg-flex justify-content-center" data-aos="zoom-in">
+                                    <img src="/images/avatar/Lambang_Kabupaten_Sumenep.png" class="hero-emblem" alt="Lambang">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    @else
         <div class="container hero-inner">
             <div class="row align-items-center g-5">
                 <div class="col-lg-7 text-center text-lg-start" data-aos="fade-right">
@@ -705,7 +751,8 @@
                 </div>
             </div>
         </div>
-    </section>
+    @endif
+</section>
 
     {{-- FEATURE HIGHLIGHT --}}
     <div class="container" style="margin-top:-70px; position:relative; z-index: 5;">
@@ -757,7 +804,7 @@
 
 
     {{-- =========================
-       SECTION BERITA & KEGIATAN (SLIDER GESER KANAN/KIRI)
+       SECTION BERITA & KEGIATAN (SWIPER SLIDER)
     ========================== --}}
     @php
         $beritas = \App\Models\Berita::where('is_publish', 1)->latest()->take(10)->get();
@@ -775,65 +822,55 @@
                     </p>
                 </div>
                 <div class="col-lg-5 text-lg-end" data-aos="fade-up" data-aos-delay="120">
-                    <span class="service-badge">
-                        <i class="bi bi-newspaper"></i> Informasi Resmi Instansi
-                    </span>
+                    <a href="{{ route('berita.public.index') }}" class="btn btn-outline-success rounded-pill px-4">
+                        Semua Berita <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
                 </div>
             </div>
 
             @if ($beritas->count())
-                <div class="news-slider">
-                    <button type="button" class="news-nav-btn prev" id="newsPrev" aria-label="Sebelumnya">
-                        <i class="bi bi-chevron-left"></i>
-                    </button>
-                    <button type="button" class="news-nav-btn next" id="newsNext" aria-label="Berikutnya">
-                        <i class="bi bi-chevron-right"></i>
-                    </button>
-
-                    <div class="news-slider-pad">
-                        <div class="news-track" id="newsTrack">
-                            @foreach ($beritas as $b)
-                                <div class="news-item" data-aos="fade-up">
-                                    <div class="custom-card h-100 shadow-sm overflow-hidden">
-                                        <div style="height:200px; overflow:hidden;">
-                                            @if ($b->gambar)
-                                                <img src="{{ asset('storage/' . $b->gambar) }}"
-                                                    alt="{{ $b->judul }}"
-                                                    style="width:100%; height:100%; object-fit:cover;">
-                                            @else
-                                                <div
-                                                    class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
-                                                    <i class="bi bi-image fs-1"></i>
-                                                </div>
-                                            @endif
-                                        </div>
-
-                                        <div class="p-4">
-                                            <span class="badge bg-success-subtle text-success mb-2">
-                                                {{ $b->kategori ?? 'Berita' }}
-                                            </span>
-
-                                            <h5 class="fw-bold mb-2">{{ $b->judul }}</h5>
-
-                                            <p class="text-muted small mb-3">
-                                                {{ \Illuminate\Support\Str::limit(strip_tags($b->ringkasan ?? $b->konten), 120) }}
-                                            </p>
-
-                                            <a href="{{ route('berita.public.show', $b->slug) }}"
-                                                class="fw-bold text-success">
-                                                Baca Selengkapnya <i class="bi bi-arrow-right"></i>
-                                            </a>
-                                        </div>
+                <div class="swiper news-swiper" id="newsSwiper">
+                    <div class="swiper-wrapper">
+                        @foreach ($beritas as $b)
+                            <div class="swiper-slide">
+                                <div class="custom-card h-100 shadow-sm overflow-hidden">
+                                    <div style="height:200px; overflow:hidden;">
+                                        @if ($b->gambar)
+                                            <img src="{{ asset('storage/' . $b->gambar) }}"
+                                                 alt="{{ $b->judul }}"
+                                                 style="width:100%; height:100%; object-fit:cover;">
+                                        @else
+                                            <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
+                                                <i class="bi bi-image fs-1"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="p-4">
+                                        <span class="badge bg-success-subtle text-success mb-2">
+                                            {{ $b->kategori ?? 'Berita' }}
+                                        </span>
+                                        <h5 class="fw-bold mb-2">{{ $b->judul }}</h5>
+                                        <p class="text-muted small mb-3">
+                                            {{ \Illuminate\Support\Str::limit(strip_tags($b->ringkasan ?? $b->konten), 120) }}
+                                        </p>
+                                        <a href="{{ route('berita.public.show', $b->slug) }}"
+                                           class="fw-bold text-success">
+                                            Baca Selengkapnya <i class="bi bi-arrow-right"></i>
+                                        </a>
                                     </div>
                                 </div>
-                            @endforeach
-                        </div>
-
-                        <div class="small text-muted mt-2">
-                            <i class="bi bi-mouse2-fill me-1"></i>
-                            Geser ke kanan/kiri (scroll) atau pakai tombol panah.
-                        </div>
+                            </div>
+                        @endforeach
                     </div>
+                    <div class="swiper-pagination news-pagination mt-3"></div>
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill news-btn-prev me-2">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill news-btn-next">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
                 </div>
             @else
                 <div class="col-12 text-center text-muted py-5">
@@ -843,6 +880,50 @@
             @endif
         </div>
     </section>
+
+    {{-- =========================
+       SECTION GALERI
+    ========================== --}}
+    @php
+        $galeriItems = \App\Models\Galeri::where('is_publish', 1)->latest()->take(6)->get();
+    @endphp
+
+    @if ($galeriItems->count())
+    <section class="section-padding" id="galeri">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="section-title fw-bold mb-2">
+                    Galeri <span class="text-success title-accent">Foto</span>
+                </h2>
+                <p class="text-muted">Dokumentasi kegiatan dan momen Dinas Kesehatan Kabupaten Sumenep.</p>
+            </div>
+
+            <div class="row g-3 gallery-grid">
+                @foreach ($galeriItems as $g)
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                        <a href="{{ route('galeri.show', $g->id) }}" class="text-decoration-none">
+                            <div class="gallery-item shadow-sm">
+                                <img src="{{ asset('storage/'.$g->gambar) }}" alt="{{ $g->judul }}" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <h6 class="fw-bold mb-0">{{ $g->judul }}</h6>
+                                    @if($g->kategori)
+                                        <small class="opacity-75">{{ $g->kategori }}</small>
+                                    @endif
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="text-center mt-4" data-aos="fade-up">
+                <a href="{{ route('galeri.index') }}" class="btn btn-outline-success rounded-pill px-4">
+                    Lihat Galeri Lengkap <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    @endif
 
     {{-- STATS --}}
     @php
@@ -993,6 +1074,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
         // AOS
@@ -1075,37 +1157,32 @@
         }
 
         // =========================
-        // NEWS SLIDER CONTROLS
+        // HERO SLIDER (Swiper)
         // =========================
-        (function() {
-            const track = document.getElementById('newsTrack');
-            const prev = document.getElementById('newsPrev');
-            const next = document.getElementById('newsNext');
+        new Swiper('.hero-swiper', {
+            loop: true,
+            autoplay: { delay: 5000, disableOnInteraction: false },
+            pagination: { el: '.swiper-pagination', clickable: true },
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+        });
 
-            if (!track || !prev || !next) return;
-
-            function getStep() {
-                const first = track.querySelector('.news-item');
-                if (!first) return 320;
-                const style = window.getComputedStyle(track);
-                const gap = parseInt(style.columnGap || style.gap || '18', 10) || 18;
-                return first.getBoundingClientRect().width + gap;
-            }
-
-            prev.addEventListener('click', () => {
-                track.scrollBy({
-                    left: -getStep(),
-                    behavior: 'smooth'
-                });
+        // =========================
+        // NEWS SLIDER (Swiper)
+        // =========================
+        const newsSwiperEl = document.getElementById('newsSwiper');
+        if (newsSwiperEl) {
+            const newsSwiper = new Swiper(newsSwiperEl, {
+                slidesPerView: 1,
+                spaceBetween: 18,
+                pagination: { el: '.news-pagination', clickable: true },
+                navigation: { nextEl: '.news-btn-next', prevEl: '.news-btn-prev' },
+                breakpoints: {
+                    576: { slidesPerView: 2 },
+                    992: { slidesPerView: 3 },
+                    1200: { slidesPerView: 4 },
+                },
             });
-
-            next.addEventListener('click', () => {
-                track.scrollBy({
-                    left: getStep(),
-                    behavior: 'smooth'
-                });
-            });
-        })();
+        }
     </script>
 
 </body>

@@ -13,9 +13,9 @@ class VerifikasiController extends Controller
         return view('verifikasi.surat_masuk', compact('data'));
     }
 
-    public function suratKeluar($id)
+    public function suratKeluar($token)
     {
-        $data = SuratKeluar::findOrFail($id);
+        $data = SuratKeluar::where('qr_token', $token)->firstOrFail();
         return view('verifikasi.surat_keluar', compact('data'));
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SuratMasuk extends Model
 {
@@ -20,6 +21,7 @@ class SuratMasuk extends Model
         'pengirim',
         'perihal',
         'file_surat',
+        'qr_token',
         'status',
 
         // ✅ metadata instansi
@@ -36,10 +38,15 @@ class SuratMasuk extends Model
         return $this->hasMany(Disposisi::class, 'surat_masuk_id');
     }
 
-    // ✅ AUTO NOMOR AGENDA saat create (AGM-0001/I/2026)
+    // ✅ AUTO NOMOR AGENDA + QR TOKEN saat create
     protected static function booted()
     {
         static::creating(function ($surat) {
+            if (empty($surat->qr_token)) {
+                $surat->qr_token = (string) Str::uuid();
+            }
+
+            // lanjut ke nomor agenda... (existing code)
             // kalau user isi manual nomor agenda, jangan override
             if (!empty($surat->nomor_agenda)) {
                 return;
@@ -89,5 +96,10 @@ class SuratMasuk extends Model
     public function recipients()
     {
         return $this->hasMany(\App\Models\SuratMasukRecipient::class, 'surat_masuk_id');
+    }
+
+    public function tujuanUser()
+    {
+        return $this->belongsTo(User::class, 'tujuan_user_id');
     }
 }

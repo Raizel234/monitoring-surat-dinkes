@@ -180,7 +180,7 @@
 
                     @if (Route::has('verifikasi.surat_masuk'))
                         <a class="btn btn-outline-success rounded-pill"
-                            href="{{ route('verifikasi.surat_masuk', $data->id) }}" target="_blank">
+                            href="{{ route('verifikasi.surat_masuk', $data->qr_token ?? $data->id) }}" target="_blank">
                             <i class="bi bi-qr-code-scan me-2"></i> Buka Halaman Verifikasi
                         </a>
                     @endif
@@ -213,14 +213,14 @@
 
                                 {{-- ✅ hanya penerima yg bisa toggle statusnya sendiri --}}
                                 @if (auth()->id() === (int) $r->user_id)
-                                    <<form method="POST"
+                                    <form method="POST"
                                         action="{{ route('surat-masuk.recipient.toggle-read', [$data->id, $r->id]) }}"
                                         class="mt-2">
                                         @csrf
                                         <button class="btn btn-sm btn-outline-success rounded-pill">
                                             {{ $r->read_at ? 'Tandai Belum Dibaca' : 'Tandai Sudah Dibaca' }}
                                         </button>
-                                        </form>
+                                    </form>
                                 @endif
                             </div>
                         </div>

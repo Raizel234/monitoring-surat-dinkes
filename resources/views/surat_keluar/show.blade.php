@@ -281,7 +281,7 @@
 
                     @if (Route::has('verifikasi.surat_keluar'))
                         <a class="btn btn-outline-success rounded-pill"
-                           href="{{ route('verifikasi.surat_keluar', $data->id) }}" target="_blank">
+                            href="{{ route('verifikasi.surat_keluar', $data->qr_token ?? $data->id) }}" target="_blank">
                             <i class="bi bi-qr-code-scan me-2"></i> Buka Halaman Verifikasi
                         </a>
                     @endif

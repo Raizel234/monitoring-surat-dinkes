@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.verifikasi')
+
+@section('content')
     <style>
         .verify-card { border: 1px solid rgba(0,0,0,0.08); border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow:hidden; }
         .verify-head { background: linear-gradient(135deg, #0f5132 0%, #198754 100%); color:#fff; padding:18px 22px; }
@@ -74,4 +76,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection
